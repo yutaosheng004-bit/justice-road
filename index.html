@@ -1,0 +1,2819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>正义之路 · 法学院养成模拟（Demo）</title>
+<!-- SECTION: styles -->
+<style>
+:root{
+  --ink:#0f1a2b; --ink2:#152339; --ink3:#1d2f4a; --ink4:#26395a;
+  --paper:#f3ecdd; --paper-dim:#c8bfae; --muted:#8d9bb2;
+  --gold:#c9a227; --gold-lt:#e8c766; --jade:#4aa3a2; --crim:#c0564f; --azure:#3f7fbf; --violet:#8f7ad6; --moss:#6f9b3f;
+  --ok:#5aa46a; --warn:#d9962e; --bad:#d1564f;
+  --r:14px; --sh:0 8px 28px rgba(0,0,0,.38);
+  --serif:"Songti SC","STSong","SimSun","Noto Serif SC",serif;
+  --sans:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans); color:var(--paper); background:
+   radial-gradient(1100px 620px at 12% -8%, #223a63 0%, transparent 60%),
+   radial-gradient(900px 560px at 92% 6%, #123b3a 0%, transparent 58%),
+   linear-gradient(180deg,#0c1626 0%,#0a1220 60%,#0b1424 100%) fixed;
+  min-height:100vh; font-size:15px; line-height:1.6;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(201,162,39,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,39,.045) 1px,transparent 1px);
+  background-size:64px 64px}
+h1,h2,h3,h4,.serif{font-family:var(--serif);letter-spacing:.02em}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px 64px;position:relative;z-index:1}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);
+  background:linear-gradient(180deg,rgba(10,18,32,.94),rgba(10,18,32,.74));
+  border-bottom:1px solid rgba(201,162,39,.28)}
+.topbar-in{max-width:1180px;margin:0 auto;padding:10px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.brand .seal{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 30% 25%,#f0d68a,#c9a227 60%,#8a6d12);color:#1b1608;font-family:var(--serif);font-weight:700;font-size:19px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 4px 14px rgba(201,162,39,.3)}
+.brand b{font-family:var(--serif);font-size:17px;font-weight:700;display:block;line-height:1.2}
+.brand small{color:var(--muted);font-size:11.5px;letter-spacing:.14em}
+.chips{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12.5px;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);white-space:nowrap}
+.chip b{font-family:var(--serif);font-size:14px;font-weight:700}
+.chip .k{color:var(--muted)}
+.chip.gold b{color:var(--gold-lt)} .chip.jade b{color:#7fd0cf} .chip.crim b{color:#f0938c}
+.chip.azur b{color:#8cc4f5} .chip.vio b{color:#c2b0f5}
+.chip.flash{animation:flashPulse .7s ease}
+@keyframes flashPulse{0%{transform:scale(1)}40%{transform:scale(1.16);background:rgba(201,162,39,.3)}100%{transform:scale(1)}}
+
+/* ---------- tabs ---------- */
+.tabs{position:sticky;top:59px;z-index:35;display:flex;gap:6px;overflow-x:auto;padding:9px 14px;
+  background:linear-gradient(180deg,rgba(13,23,39,.92),rgba(13,23,39,.6));border-bottom:1px solid rgba(255,255,255,.07);scrollbar-width:thin}
+.tabs::-webkit-scrollbar{height:5px}.tabs::-webkit-scrollbar-thumb{background:rgba(201,162,39,.35)}
+.tab{flex:none;padding:8px 14px;border-radius:10px;font-size:13.5px;color:#b9c5d8;border:1px solid transparent;transition:.18s;white-space:nowrap}
+.tab:hover{color:#fff;background:rgba(255,255,255,.06)}
+.tab.on{color:#1a1408;background:linear-gradient(180deg,#e8c766,#c9a227);border-color:#e8c766;font-weight:700;box-shadow:0 4px 14px rgba(201,162,39,.28)}
+.tab.lk{opacity:.5;cursor:not-allowed}
+.tab .lock{opacity:.55;font-size:11px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* ---------- generic ---------- */
+.view{display:none;animation:fadeUp .3s ease}
+.view.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.vhead{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:22px 0 14px}
+.vhead h2{margin:0;font-size:24px}
+.vhead p{margin:0;color:var(--muted);font-size:13px;flex:1;min-width:200px}
+.panel{background:linear-gradient(180deg,rgba(29,47,74,.72),rgba(21,35,57,.82));border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
+.mt{margin-top:12px}.mtl{margin-top:18px}
+.hr{height:1px;background:linear-gradient(90deg,rgba(201,162,39,.4),transparent);margin:14px 0}
+.muted{color:var(--muted)} .tiny{font-size:12px} .sm{font-size:13px}
+.gold{color:var(--gold-lt)} .ok{color:#84d59a} .bad{color:#f0938c} .warn{color:#f0c069}
+.tag{display:inline-block;padding:1px 8px;border-radius:6px;font-size:11.5px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12)}
+.pill{padding:3px 10px;border-radius:999px;font-size:12px;border:1px solid}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:11px;
+  background:linear-gradient(180deg,#2b446e,#1c3055);border:1px solid rgba(140,180,230,.3);color:#e9f1fb;
+  font-weight:600;transition:.16s;font-size:14px}
+.btn:hover:not(:disabled){transform:translateY(-1px);border-color:#8cc4f5;box-shadow:0 6px 18px rgba(63,127,191,.3)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.btn.gold{background:linear-gradient(180deg,#e8c766,#b8912a);color:#1b1608;border-color:#f0d68a}
+.btn.gold:hover:not(:disabled){box-shadow:0 6px 18px rgba(201,162,39,.42);border-color:#fff0b8}
+.btn.ghost{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.16);font-weight:500}
+.btn.danger{background:linear-gradient(180deg,#8f3b38,#6d2a28);border-color:#c0564f}
+.btn.sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+.btn.blk{width:100%}
+.btnrow{display:flex;gap:9px;flex-wrap:wrap}
+
+/* ---------- attribute bars ---------- */
+.subj{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;overflow:hidden}
+.subj .lv{position:absolute;top:10px;right:11px;font-family:var(--serif);font-size:12px;letter-spacing:.06em}
+.subj .nm{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-size:16px}
+.subj .badge{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:13px;font-weight:700;color:#0d1420}
+.bar{height:7px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:9px}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.subj .ds{color:var(--muted);font-size:11.5px;margin-top:7px;line-height:1.45}
+.barlabel{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:6px}
+
+/* ---------- cards ---------- */
+.cardgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(232px,1fr))}
+.lawcard{position:relative;border-radius:13px;padding:13px 13px 11px;overflow:hidden;
+  background:linear-gradient(165deg,rgba(255,255,255,.1),rgba(255,255,255,.02) 55%);
+  border:1px solid rgba(255,255,255,.14);transition:.2s;cursor:pointer}
+.lawcard::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 60% at 0% 0%,rgba(255,255,255,.12),transparent 60%);pointer-events:none}
+.lawcard:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(0,0,0,.42)}
+.lawcard .ctop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.lawcard .cname{font-family:var(--serif);font-size:16.5px;font-weight:700;line-height:1.3}
+.lawcard .cost{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 30% 25%,#7fc0ff,#2b6ca8);font-weight:700;font-size:13px;color:#04101c;border:1px solid rgba(255,255,255,.4)}
+.lawcard .law{font-size:11.5px;color:var(--gold-lt);margin-top:5px;font-family:var(--serif)}
+.lawcard .quote{font-size:11.5px;color:#b7c4d6;margin-top:4px;line-height:1.5;border-left:2px solid rgba(201,162,39,.5);padding-left:7px}
+.lawcard .desc{font-size:12px;color:#d7dfec;margin-top:7px;line-height:1.5}
+.lawcard .meta{display:flex;gap:6px;align-items:center;margin-top:9px;flex-wrap:wrap}
+.rarity{font-size:10.5px;font-weight:800;letter-spacing:.08em;padding:1px 6px;border-radius:5px}
+.rSR{background:rgba(143,122,214,.24);color:#c2b0f5;border:1px solid rgba(143,122,214,.5)}
+.rSSR{background:rgba(201,162,39,.22);color:#f0d68a;border:1px solid rgba(201,162,39,.6)}
+.rR{background:rgba(120,150,190,.2);color:#b9d0ea;border:1px solid rgba(120,150,190,.45)}
+.kind{font-size:11px;color:var(--muted)}
+.decktag{position:absolute;top:0;right:0;padding:2px 9px 4px;border-bottom-left-radius:9px;font-size:11px;
+  background:linear-gradient(180deg,#e8c766,#c9a227);color:#1b1608;font-weight:700}
+.lockmask{position:absolute;inset:0;background:rgba(9,15,26,.78);backdrop-filter:blur(1.5px);display:grid;place-content:center;gap:6px;text-align:center;padding:12px}
+.lockmask span{font-size:12px;color:var(--muted)}
+
+/* ---------- case list ---------- */
+.caselisted{border-radius:12px;border:1px solid rgba(255,255,255,.1);padding:14px;
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.015));display:flex;gap:13px;align-items:center;flex-wrap:wrap}
+.caselisted .st{flex:none;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-family:var(--serif);font-size:19px;color:#0d1420}
+.caselisted .info{flex:1;min-width:180px}
+.caselisted h4{margin:0;font-size:16.5px}
+.caselisted .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.stars{letter-spacing:2px;color:var(--gold);font-size:12px}
+.done{color:#84d59a;font-size:12px}
+.filterrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.segbtn{padding:6px 12px;border-radius:9px;font-size:12.5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#c3d0e2}
+.segbtn.on{background:rgba(201,162,39,.2);border-color:var(--gold);color:#f0d68a;font-weight:700}
+
+/* ---------- court ---------- */
+.court{border-radius:16px;overflow:hidden;border:1px solid rgba(201,162,39,.3);
+  background:linear-gradient(180deg,rgba(15,26,43,.9),rgba(11,20,36,.96))}
+.court .roof{padding:11px 14px;background:linear-gradient(180deg,rgba(201,162,39,.2),transparent);
+  display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(201,162,39,.22)}
+.court .roof b{font-family:var(--serif);font-size:15px}
+.duel{display:grid;grid-template-columns:1fr 74px 1fr;gap:10px;padding:14px}
+@media(max-width:720px){.duel{grid-template-columns:1fr;gap:8px}.vscol{order:-1}}
+.fighter{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}
+.fighter .who{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.avatar{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:21px;flex:none;border:1px solid rgba(255,255,255,.18)}
+.fighter .who b{font-size:14.5px;display:block;font-family:var(--serif)}
+.fighter .who small{color:var(--muted);font-size:11.5px}
+.hpwrap{margin-top:6px}
+.hpline{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+.sbar{height:9px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin:3px 0 7px}
+.sbar i{display:block;height:100%;border-radius:99px;transition:width .45s ease}
+.sbar.hp i{background:linear-gradient(90deg,#6fd08a,#3f8f56)}
+.sbar.hp.low i{background:linear-gradient(90deg,#f0a06a,#c0564f)}
+.sbar.mp i{background:linear-gradient(90deg,#7fc0ff,#2b6ca8)}
+.sbar.sh i{background:linear-gradient(90deg,#e8c766,#a2810f)}
+.vscol{display:grid;place-items:center;text-align:center}
+.vsbalance{font-size:11px;color:var(--muted);margin-top:4px}
+.chips-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.statchip{font-size:11px;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.statchip.neg{background:rgba(209,86,79,.18);border-color:rgba(209,86,79,.5);color:#f0938c}
+.statchip.pos{background:rgba(90,164,106,.18);border-color:rgba(90,164,106,.5);color:#84d59a}
+.logbox{height:150px;overflow-y:auto;margin:0 14px;padding:10px 12px;border-radius:11px;background:rgba(0,0,0,.34);
+  border:1px solid rgba(255,255,255,.09);font-size:12.5px;line-height:1.65;scrollbar-width:thin}
+.logbox::-webkit-scrollbar{width:5px}.logbox::-webkit-scrollbar-thumb{background:rgba(201,162,39,.3)}
+.logbox p{margin:0 0 5px;padding-left:10px;border-left:2px solid rgba(255,255,255,.14);color:#c9d5e6}
+.logbox p.you{border-color:#7fc0ff;color:#dcefff}
+.logbox p.foe{border-color:#c0564f;color:#f0c5c0}
+.logbox p.crit{border-color:var(--gold);color:#f5e2a8;font-weight:600}
+.logbox p.sys{border-color:var(--violet);color:#cbbcf5}
+.hand{display:flex;gap:9px;overflow-x:auto;padding:13px 14px;scrollbar-width:thin}
+.hand::-webkit-scrollbar{height:6px}.hand::-webkit-scrollbar-thumb{background:rgba(201,162,39,.3)}
+.hcard{flex:none;width:158px;border-radius:12px;padding:10px;text-align:left;
+  background:linear-gradient(170deg,rgba(255,255,255,.12),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.2);transition:.16s;position:relative}
+.hcard:hover:not(:disabled){transform:translateY(-4px);border-color:var(--gold-lt);box-shadow:0 10px 22px rgba(0,0,0,.44)}
+.hcard:disabled{opacity:.4;cursor:not-allowed}
+.hcard .hn{font-family:var(--serif);font-size:14.5px;font-weight:700;line-height:1.3;margin-bottom:3px;padding-right:22px}
+.hcard .hl{font-size:10.5px;color:var(--gold-lt);line-height:1.4}
+.hcard .hd{font-size:11px;color:#c5d1e2;margin-top:5px;line-height:1.45}
+.hcard .hc{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 30% 25%,#7fc0ff,#2b6ca8);color:#04101c;font-weight:700;font-size:12px}
+.hcard.mismatch{border-color:rgba(209,86,79,.6)}
+.hcard.mismatch::before{content:"案由不符⚠";position:absolute;bottom:6px;right:8px;font-size:9.5px;color:#f0938c}
+.shake{animation:shake .42s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.dmgpop{position:absolute;font-family:var(--serif);font-weight:800;font-size:24px;pointer-events:none;
+  animation:popUp 1s ease forwards;text-shadow:0 2px 12px rgba(0,0,0,.6);z-index:5}
+@keyframes popUp{0%{opacity:0;transform:translateY(6px) scale(.7)}25%{opacity:1;transform:translateY(-6px) scale(1.15)}100%{opacity:0;transform:translateY(-40px) scale(1)}}
+
+/* ---------- wizard (case flow) ---------- */
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.step{flex:1;min-width:96px;padding:8px 9px;border-radius:10px;font-size:12.5px;text-align:center;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);color:var(--muted)}
+.step.on{background:rgba(201,162,39,.18);border-color:var(--gold);color:#f0d68a;font-weight:700}
+.step.done{background:rgba(90,164,106,.14);border-color:rgba(90,164,106,.5);color:#84d59a}
+.opt{display:block;width:100%;text-align:left;padding:11px 13px;border-radius:11px;margin-bottom:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);transition:.15s;font-size:13.5px;line-height:1.5}
+.opt:hover{background:rgba(127,192,255,.1);border-color:#8cc4f5}
+.opt.on{background:rgba(201,162,39,.16);border-color:var(--gold)}
+.opt.good{background:rgba(90,164,106,.18);border-color:#5aa46a}
+.opt.evil{background:rgba(209,86,79,.18);border-color:#d1564f}
+.opt[disabled]{cursor:default;opacity:.85}
+.opt .mk{display:inline-block;width:18px;font-family:var(--serif);color:var(--gold-lt)}
+.notebox{border-radius:11px;padding:11px 13px;font-size:13px;line-height:1.6;margin-top:10px;
+  background:rgba(143,122,214,.12);border:1px solid rgba(143,122,214,.4)}
+.notebox.warn{background:rgba(217,150,46,.13);border-color:rgba(217,150,46,.45)}
+.notebox.bad{background:rgba(209,86,79,.14);border-color:rgba(209,86,79,.45)}
+.facts{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px 14px;font-size:13.5px;line-height:1.75}
+.facts b{color:var(--gold-lt);font-family:var(--serif)}
+
+/* ---------- modal / toast ---------- */
+.mask{position:fixed;inset:0;background:rgba(6,11,20,.78);backdrop-filter:blur(4px);z-index:80;
+  display:none;align-items:center;justify-content:center;padding:18px}
+.mask.on{display:flex}
+.dlg{max-width:640px;width:100%;max-height:88vh;overflow-y:auto;border-radius:16px;padding:20px;
+  background:linear-gradient(180deg,#1b2c47,#111d31);border:1px solid rgba(201,162,39,.35);box-shadow:0 24px 60px rgba(0,0,0,.6);scrollbar-width:thin}
+.dlg::-webkit-scrollbar{width:6px}.dlg::-webkit-scrollbar-thumb{background:rgba(201,162,39,.3)}
+.dlg h3{margin:0 0 6px;font-size:20px}
+.dlg .dsub{color:var(--muted);font-size:12.5px;margin-bottom:12px}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);z-index:95;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.tst{padding:10px 18px;border-radius:11px;font-size:13.5px;background:rgba(20,32,52,.96);border:1px solid rgba(201,162,39,.45);
+  box-shadow:0 10px 26px rgba(0,0,0,.5);animation:tstIn .3s ease forwards;max-width:82vw}
+.tst.bad{border-color:rgba(209,86,79,.6);color:#f5c3bf}
+.tst.ok{border-color:rgba(90,164,106,.6);color:#bfe8c8}
+@keyframes tstIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.tst.out{animation:tstOut .3s ease forwards}
+@keyframes tstOut{to{opacity:0;transform:translateY(12px)}}
+
+/* ---------- misc views ---------- */
+.timeline{position:relative;padding-left:22px}
+.timeline::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:linear-gradient(180deg,var(--gold),rgba(201,162,39,.1))}
+.tl{position:relative;margin-bottom:12px;font-size:13px;line-height:1.6}
+.tl::before{content:"";position:absolute;left:-20px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(201,162,39,.6)}
+.tl .tm{color:var(--muted);font-size:11.5px;font-family:var(--serif);letter-spacing:.05em}
+.perk{display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);font-size:12.5px}
+.perk .ic{font-size:17px;flex:none}
+.persona{border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05)}
+.persona .pv{font-family:var(--serif);font-size:22px}
+.route{border-radius:14px;padding:15px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(165deg,rgba(255,255,255,.08),rgba(255,255,255,.02));position:relative;overflow:hidden}
+.route h4{margin:0 0 3px;font-size:18px;display:flex;align-items:center;gap:8px}
+.node{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.12)}
+.node:last-child{border:0}
+.node .dot{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);margin-top:2px}
+.node.cur .dot{background:linear-gradient(180deg,#e8c766,#c9a227);color:#1b1608;border-color:#f0d68a}
+.node.lockd{opacity:.5}
+.evil-meter{height:10px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.evil-meter i{display:block;height:100%;background:linear-gradient(90deg,#d9962e,#d1564f,#8b1f1f);transition:width .5s}
+.footer{margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.09);color:#6d7b93;font-size:11.5px;line-height:1.7}
+.footer b{color:#8d9bb2}
+@media(max-width:640px){
+  .vhead h2{font-size:20px}.panel{padding:13px}.cardgrid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .brand small{display:none}.lawcard .quote{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- SECTION: topbar -->
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <div class="seal">律</div>
+      <div><b>正义之路</b><small>法学院养成 · 司法仕途模拟</small></div>
+    </div>
+    <div class="chips" id="statChips"></div>
+    <button class="btn ghost sm" id="btnMenu" type="button">存档 ▾</button>
+  </div>
+</header>
+
+<!-- SECTION: tabs -->
+<nav class="tabs" id="tabs"></nav>
+
+<main class="wrap">
+  <!-- SECTION: views -->
+  <section class="view" id="view-campus"></section>
+  <section class="view" id="view-deck"></section>
+  <section class="view" id="view-case"></section>
+  <section class="view" id="view-court"></section>
+  <section class="view" id="view-exam"></section>
+  <section class="view" id="view-career"></section>
+  <section class="view" id="view-record"></section>
+</main>
+
+<!-- SECTION: modal -->
+<div class="mask" id="mask"><div class="dlg" id="dlg"></div></div>
+<div id="toast" aria-live="polite"></div>
+
+<!-- SECTION: scripts -->
+<script>
+/* SECTION: data-meta
+   正义之路 · 法学院养成模拟 —— 游戏数据（全部案例为虚构改编，法条文字为教学示意，不构成法律意见） */
+const LAW_DATA = {};
+
+/* SECTION: data-subjects 六大学科 = 六大属性 */
+LAW_DATA.subjects = [
+  { id: 'xz',  name: '宪法',   short: '宪', color: '#c9a227', desc: '基本权利与国家权力边界，防御性底牌' },
+  { id: 'fl',  name: '法理',   short: '理', color: '#8f7ad6', desc: '解释方法、法律原则与效力渊源' },
+  { id: 'mf',  name: '民法',   short: '民', color: '#4aa3a2', desc: '合同、侵权、物权与民事责任' },
+  { id: 'xf',  name: '刑法',   short: '刑', color: '#c0564f', desc: '犯罪构成、罪刑法定与正当防卫' },
+  { id: 'xzf', name: '行政法', short: '行', color: '#3f7fbf', desc: '依法行政、处罚裁量与比例原则' },
+  { id: 'ssf', name: '诉讼法', short: '诉', color: '#6f9b3f', desc: '举证责任、程序正义与庭审规则' }
+];
+
+LAW_DATA.levels = [
+  { name: '零基础', min: 0 },
+  { name: '入门',   min: 30 },
+  { name: '熟练',   min: 70 },
+  { name: '精通',   min: 130 },
+  { name: '权威',   min: 200 }
+];
+
+LAW_DATA.personas = [
+  { id: 'yan',   name: '严谨派', color: '#3f7fbf', perk: '适用法律错误时反伤减少一半' },
+  { id: 'ren',   name: '仁慈派', color: '#c9a227', perk: '调解与从轻建议胜诉后额外+民心声望' },
+  { id: 'tie',   name: '铁面派', color: '#c0564f', perk: '拒绝说情后本案伤害+20%' },
+  { id: 'shi',   name: '实务派', color: '#4aa3a2', perk: '每回合多回复1点法理值' },
+  { id: 'xue',   name: '学术派', color: '#8f7ad6', perk: '法理卡伤害加成+25%' }
+];
+
+/* SECTION: data-cards 法条卡牌库 */
+LAW_DATA.cards = [
+  { id: 'c_nullum',    name: '罪刑法定屏障', subj: 'xf',  kind: 'def',  cost: 3, power: 0,  shield: 18, tags: ['crime'], rarity: 'SR', starter: true,
+    law: '《刑法》第3条', text: '法律没有明文规定为犯罪行为的，不得定罪处刑。',
+    desc: '举起构成要件的铁门：本回合大幅减伤，并驱散我方"有罪推定"类负面状态。' },
+  { id: 'c_selfdef',   name: '正当防卫反击', subj: 'xf',  kind: 'atk',  cost: 4, power: 14, counter: 9, tags: ['crime'], rarity: 'SR', starter: true,
+    law: '《刑法》第20条', text: '对正在进行的不法侵害采取的防卫行为，不负刑事责任。',
+    desc: '认定防卫性质并反击：造成伤害，对方下一次攻击将遭到反噬。' },
+  { id: 'c_necessity', name: '紧急避险减免', subj: 'xf',  kind: 'def',  cost: 2, shield: 10, san: 6, dispel: true, tags: ['crime'], rarity: 'R', unlock: 6,
+    law: '《刑法》第21条', text: '为避免正在发生的危险而不得已采取的避险行为，不负刑事责任。',
+    desc: '两害相权取其轻：小额减伤、回复理智并解除一个负面状态。' },
+  { id: 'c_doubt',     name: '疑罪从无终局', subj: 'ssf', kind: 'ult',  cost: 8, power: 30, pierce: true, tags: ['crime', 'state'], rarity: 'SSR', unlock: 14,
+    law: '《刑事诉讼法》第200条第（三）项', text: '证据不足，不能认定被告人有罪的，应当作出无罪判决。',
+    desc: '终极审判技：无视对方一切防御与格挡的重击。' },
+  { id: 'c_illegal_ev',name: '非法证据排除', subj: 'ssf', kind: 'ctrl', cost: 5, power: 7, strip: true, tags: ['crime', 'admin'], rarity: 'SR', unlock: 9,
+    law: '《刑事诉讼法》第56条', text: '以非法方法收集的证据应当依法予以排除。',
+    desc: '把污染的证据请出法庭：造成伤害并令对方下一招失效。' },
+  { id: 'c_burden',    name: '举证不能反杀', subj: 'ssf', kind: 'atk',  cost: 4, power: 12, counter: 20, tags: ['civil', 'admin', 'labor', 'state'], rarity: 'SR', starter: true,
+    law: '《最高人民法院关于适用〈民事诉讼法〉的解释》第90条', text: '未作出证明的，由负有举证证明责任的当事人承担不利后果。',
+    desc: '你拿不出证据？那这局算你的：造成伤害并挂载极高反击。' },
+  { id: 'c_claim',     name: '谁主张谁举证', subj: 'ssf', kind: 'buff', cost: 2, critUp: 20, mp: 2, dur: 2, tags: ['civil', 'labor', 'state'], rarity: 'R', starter: true,
+    law: '《民事诉讼法》第67条', text: '当事人对自己提出的主张，有责任提供证据。',
+    desc: '把举证责任摆正：两回合内暴击率提升。' },
+  { id: 'c_procedure', name: '程序正义暴击', subj: 'ssf', kind: 'atk',  cost: 5, power: 18, critVs: 'procedural', tags: ['admin', 'civil', 'crime', 'labor'], rarity: 'SSR', unlock: 12,
+    law: '《行政诉讼法》第70条', text: '违反法定程序的行政行为，判决撤销或部分撤销。',
+    desc: '锁定程序瑕疵的重击：面对程序类招数必定暴击。' },
+  { id: 'c_defendant_burden', name: '被告举证责任', subj: 'xzf', kind: 'ctrl', cost: 4, power: 10, stun: 1, tags: ['admin', 'state'], rarity: 'SR', unlock: 10,
+    law: '《行政诉讼法》第34条', text: '被告对作出的行政行为负有举证责任。',
+    desc: '让执法者自己证明合法性：造成伤害并让对方迟疑一回合。' },
+  { id: 'c_proportion', name: '比例原则压制', subj: 'xzf', kind: 'atk', cost: 4, power: 15, weaken: 40, dur: 2, tags: ['admin'], rarity: 'SSR', starter: true,
+    law: '《行政处罚法》第5条第2款', text: '处罚必须以事实为依据，与违法行为的事实、性质、情节以及社会危害程度相当。',
+    desc: '行政法神技：一秤压下去，对方两回合输出大幅衰减。' },
+  { id: 'c_balancescale', name: '过罚相当秤', subj: 'xzf', kind: 'def', cost: 3, shield: 14, san: 5, tags: ['admin'], rarity: 'R', unlock: 5,
+    law: '《行政处罚法》第5条第2款', text: '过罚相当，禁止畸轻畸重。',
+    desc: '把处罚重量放上天平：减伤并安抚理智。' },
+  { id: 'c_firstno',   name: '首违不罚令', subj: 'xzf', kind: 'ult', cost: 6, power: 24, immune: 1, tags: ['admin'], rarity: 'SSR', unlock: 13,
+    law: '《行政处罚法》第33条', text: '初次违法且危害后果轻微并及时改正的，可以不予行政处罚。',
+    desc: '轻微与初次之辩：重击并获得一回合免疫。' },
+  { id: 'c_edu_punish', name: '处罚与教育结合', subj: 'xzf', kind: 'buff', cost: 2, shield: 8, mp: 5, tags: ['admin'], rarity: 'R', unlock: 4,
+    law: '《行政处罚法》第6条', text: '实施行政处罚，纠正违法行为，应当坚持处罚与教育相结合。',
+    desc: '执法不是为罚而罚：回蓝并获得护盾。' },
+  { id: 'c_powerkeep', name: '法律保留原则', subj: 'fl', kind: 'ctrl', cost: 4, power: 10, weaken: 30, dur: 2, tags: ['admin', 'state'], rarity: 'SR', unlock: 8,
+    law: '《立法法》第8条（法律保留事项）', text: '限制人身自由、对非国有财产的征收等事项只能制定法律。',
+    desc: '没有法律授权你就不能动手：削弱对方裁量权。' },
+  { id: 'c_interpret', name: '体系解释穿透', subj: 'fl', kind: 'atk', cost: 3, power: 11, pierce: true, tags: ['civil', 'admin', 'crime', 'labor', 'state'], rarity: 'R', starter: true,
+    law: '法解释学 · 体系解释', text: '把条文放回整部法律的目的与结构中理解。',
+    desc: '从条文的相互关系切入：无视格挡的穿透伤害。' },
+  { id: 'c_goodfaith', name: '诚信原则基石', subj: 'fl', kind: 'buff', cost: 1, mp: 7, tags: ['civil', 'labor'], rarity: 'R', unlock: 3,
+    law: '《民法典》第7条', text: '民事主体从事民事活动，应当遵循诚信原则。',
+    desc: '帝王条款续航：大幅回复法理值。' },
+  { id: 'c_bfp',       name: '善意第三人抗辩', subj: 'mf', kind: 'def', cost: 4, shield: 20, counter: 11, tags: ['civil'], rarity: 'SSR', unlock: 12,
+    law: '《民法典》第311条（善意取得）', text: '善意、合理价格、依法登记或交付的受让人取得该物权。',
+    desc: '民法翻盘技：厚盾加反击，把风险甩回对方。' },
+  { id: 'c_publicorder', name: '公序良俗否决', subj: 'mf', kind: 'ctrl', cost: 5, power: 8, strip: true, dispel: true, tags: ['civil', 'labor'], rarity: 'SR', unlock: 9,
+    law: '《民法典》第8条、第153条第2款', text: '违背公序良俗的民事法律行为无效。',
+    desc: '一纸否决无效行为：令对方下一招失效并解除我方负面状态。' },
+  { id: 'c_punitive',  name: '惩罚性赔偿三连', subj: 'mf', kind: 'atk', cost: 6, power: 26, tags: ['civil'], rarity: 'SSR', unlock: 13,
+    law: '《消费者权益保护法》第55条第1款', text: '有欺诈行为的，增加赔偿金额为价款的三倍；不足五百元的为五百元。',
+    desc: '退一赔三，三连重击。' },
+  { id: 'c_safety_duty', name: '安全保障义务锁', subj: 'mf', kind: 'ctrl', cost: 3, power: 8, stun: 1, tags: ['civil'], rarity: 'R', unlock: 5,
+    law: '《民法典》第1198条', text: '经营场所、公共场所的管理者未尽到安全保障义务的，承担侵权责任。',
+    desc: '把管理者的义务锁在被告席：造成伤害并定住对方。' },
+  { id: 'c_contract',  name: '违约责任求偿', subj: 'mf', kind: 'atk', cost: 3, power: 12, tags: ['civil', 'labor'], rarity: 'R', starter: true,
+    law: '《民法典》第577条', text: '不履行或不符合约定的，应承担继续履行、补救或赔偿责任。',
+    desc: '白纸黑字的合同之力。' },
+  { id: 'c_consumer',  name: '生活消费推定', subj: 'mf', kind: 'def', cost: 2, shield: 12, dispel: true, tags: ['civil'], rarity: 'R', unlock: 4,
+    law: '《消费者权益保护法》第2条', text: '消费者为生活消费需要购买、使用商品或接受服务，其权益受本法保护。',
+    desc: '拆掉"不是消费者"的挡箭牌：减伤并解除负面状态。' },
+  { id: 'c_fault',     name: '过错责任认定', subj: 'mf', kind: 'atk', cost: 2, power: 9, tags: ['civil'], rarity: 'R', unlock: 3,
+    law: '《民法典》第1165条', text: '因过错侵害他人民事权益造成损害的，应当承担侵权责任。',
+    desc: '低成本稳定输出，四要件齐备。' },
+  { id: 'c_edushield', name: '受教育权护盾', subj: 'xz', kind: 'def', cost: 3, shield: 22, tags: ['admin', 'civil'], rarity: 'SR', unlock: 8,
+    law: '《宪法》第46条', text: '中华人民共和国公民有受教育的权利和义务。',
+    desc: '基本权利直接落成厚盾。' },
+  { id: 'c_independent', name: '独立审判宣言', subj: 'xz', kind: 'buff', cost: 4, dispel: true, immune: 2, shield: 6, tags: ['admin', 'crime', 'state', 'civil'], rarity: 'SSR', unlock: 14,
+    law: '《宪法》第131条', text: '人民法院依照法律规定独立行使审判权，不受行政机关、社会团体和个人的干涉。',
+    desc: '顶住干预：解除负面状态并获得两回合免疫。' },
+  { id: 'c_equal',     name: '法律面前平等', subj: 'xz', kind: 'buff', cost: 2, critUp: 15, mp: 3, dur: 2, tags: ['civil', 'crime', 'admin', 'labor', 'state'], rarity: 'R', unlock: 5,
+    law: '《宪法》第33条第2款', text: '公民在法律面前一律平等。',
+    desc: '任何身份都不享有特权：两回合内暴击率提升。' },
+  { id: 'c_labor_burden', name: '考勤举证倒置', subj: 'ssf', kind: 'ctrl', cost: 4, power: 10, strip: true, tags: ['labor'], rarity: 'SR', unlock: 9,
+    law: '《劳动争议调解仲裁法》第6条', text: '证据属于用人单位掌握管理的，用人单位应当提供；不提供的承担不利后果。',
+    desc: '考勤与工资台账在你手里，你就得拿出来。' },
+  { id: 'c_severance', name: '经济补偿与二倍赔偿', subj: 'mf', kind: 'atk', cost: 5, power: 20, tags: ['labor'], rarity: 'SSR', unlock: 12,
+    law: '《劳动合同法》第47条、第87条', text: '按工作年限每满一年支付一个月工资；违法解除的按经济补偿标准的二倍支付赔偿金。',
+    desc: 'N 与 2N 的算术，直接砸出高额伤害。' },
+  { id: 'c_unionproc', name: '工会程序审查', subj: 'ssf', kind: 'def', cost: 3, shield: 14, critVs: 'procedural', tags: ['labor'], rarity: 'R', unlock: 6,
+    law: '《劳动合同法》第43条', text: '用人单位单方解除劳动合同，应当事先将理由通知工会。',
+    desc: '程序缺口就是胜负手：减伤并对程序类招数必定暴击。' },
+  { id: 'c_dailypay',  name: '按日赔偿计算', subj: 'xz', kind: 'atk', cost: 5, power: 22, tags: ['state'], rarity: 'SR', unlock: 11,
+    law: '《国家赔偿法》第33条', text: '侵犯公民人身自由的，每日赔偿金按照国家上年度职工日平均工资计算。',
+    desc: '把失去的自由折算成可计算的每一天。' },
+  { id: 'c_oathpay',   name: '复议不利变更禁止', subj: 'xzf', kind: 'def', cost: 3, shield: 16, dispel: true, tags: ['admin'], rarity: 'R', unlock: 7,
+    law: '《行政复议法》（不利变更禁止之原理）', text: '行政复议机关不得作出对申请人更为不利的变更决定。',
+    desc: '申诉不会让你更惨：减伤并解除负面状态。' }
+];
+
+/* SECTION: data-ext */
+window.LAW_DATA = LAW_DATA;
+
+</script>
+<script>
+/* SECTION: data-cases
+   七大案例：阅卷取证 → 定性 → 找法条 → 写文书 → 法庭辩论。全部虚构改编。 */
+LAW_DATA.cases = [
+  {
+    id: 'k1', stage: 'study', term: 1, name: '网购假货三倍赔偿纠纷', kind: 'civil', kindName: '民事纠纷 · 合同欺诈',
+    intro: '大三学生小周在"极风数码店"下单4部手机，收货后发现全是翻新机。店主当庭甩出一句："你明知是假货还一次买4部，根本不是消费者！"小周主张退一赔三。',
+    tag: 'civil', difficulty: 1,
+    reward: { gold: 60, fame: 8, lili: 5, exp: { mf: 12, ssf: 6 } },
+    evidence: {
+      prompt: '阅卷取证：为小周搭起证据链，哪些该提交？（选错会被对方抓住程序漏洞，扣理智）',
+      options: [
+        { text: '平台订单页与支付凭证', correct: true, note: '直接证明合同成立与价款。' },
+        { text: '店主承认"芯片是换的"的聊天记录', correct: true, note: '自认欺诈的关键一击。' },
+        { text: '第三方检测机构翻新机鉴定报告', correct: true, note: '把"感觉是假的"变成"证明是假的"。' },
+        { text: '小周上周在别家店买零食的收据', correct: false, note: '与本案无关，法庭会当庭质疑你的取证能力。' }
+      ]
+    },
+    qualify: {
+      prompt: '定性法律关系：本案的请求权基础是什么？',
+      options: [
+        { text: '经营者欺诈，消费者可主张价款三倍的惩罚性赔偿', correct: true, note: '消保法第55条第1款，且"知假买假"在食品与一般消费领域司法实践中通常不影响消费者身份认定。' },
+        { text: '重大误解，只能撤销合同退款', correct: false, note: '商家是故意售假，不是误解。' },
+        { text: '不当得利，返还差价即可', correct: false, note: '漏掉了欺诈的惩罚性赔偿维度。' }
+      ]
+    },
+    lawpick: {
+      prompt: '适用法条（选2张，选错将构成适用法律错误）：',
+      options: ['c_contract', 'c_burden', 'c_doubt', 'c_proportion'],
+      correct: ['c_contract', 'c_burden'],
+      notes: { c_contract: '违约责任是请求权起点，欺诈情形下按消保法第55条加计三倍赔偿。', c_burden: '商家主张"库存尾货"却不提供进货来源，举证不能由其承担不利后果。', c_doubt: '疑罪从无是刑事诉讼规则，民事案件乱用＝适用法律错误。', c_proportion: '比例原则针对行政处罚，打民事相对方同样是适用错误。' },
+      tip: '提示：本题考核「法条与案由匹配」。选对但未解锁的法条只能提高办案表现，带不进法庭；已解锁且编入卡组的法条，庭上伤害额外 +28%。'
+    },
+    doc: {
+      prompt: '起诉状要点：辩护词的落点应该写什么？',
+      options: [
+        { text: '商家构成欺诈＋三倍赔偿（不足500按500）＋诉讼费承担', correct: true },
+        { text: '请求法院让客户经理道歉', correct: false }
+      ]
+    },
+    moral: null,
+    battle: {
+      enemy: '极风数码店代理律师 · 郝掌柜', enemyLv: 1, hp: 42, mp: 8,
+      taunt: '我卖的是"库存尾货"，他自己贪便宜，怪谁？',
+      moves: [
+        { name: '标准条款墙', type: 'atk', tag: 'text', power: 10, text: '甩出用户协议："概不退换！"' },
+        { name: '拖延程序战', type: 'atk', tag: 'procedural', power: 8, text: '申请管辖权异议，先耗你一个月。' },
+        { name: '身份质疑', type: 'atk', tag: 'evidence', power: 11, text: '"买四部的不是消费者，是牟利者！"' }
+      ],
+      winText: '法庭认定欺诈成立：退一赔三！小周捧着判决书朝你鞠了一躬。',
+      loseText: '管辖权异议+程序消耗，小周的手机款至今没要回来。'
+    }
+  },
+  {
+    id: 'k2', stage: 'study', term: 2, name: '高空抛物伤人案', kind: 'civil', kindName: '民事纠纷 · 高空抛物',
+    intro: '晚自习归途，一栋33层居民楼掉落烟灰缸砸伤学生小林。警方查不出具体住户，小林起诉物业与全楼可能住户。物业抗辩："我们贴了禁止高空抛物的告示，已尽义务。"',
+    tag: 'civil', difficulty: 1,
+    reward: { gold: 50, fame: 7, lili: 5, exp: { mf: 14, ssf: 4 } },
+    evidence: {
+      prompt: '阅卷取证：哪些证据能撑起索赔？',
+      options: [
+        { text: '医院伤情诊断与费用票据', correct: true, note: '损害后果的基础证据。' },
+        { text: '坠落物轨迹鉴定意见', correct: true, note: '锁定抛掷区域，缩小"可能加害"范围。' },
+        { text: '物业只贴告示却从未巡查的值班记录', correct: true, note: '戳破"已尽安保义务"的假面。' },
+        { text: '小林朋友圈的抱怨截图', correct: false, note: '情绪宣泄不是证据。' }
+      ]
+    },
+    qualify: {
+      prompt: '定性：物业与"可能加害的建筑物使用人"各承担什么？',
+      options: [
+        { text: '使用人不能证明自己无嫌疑的给予补偿；物业未尽安保义务承担侵权责任', correct: true, note: '民法典第1254条双层结构。' },
+        { text: '全楼住户连带赔偿全部损失', correct: false, note: '是"给予补偿"而非连带全赔。' },
+        { text: '找不到肇事者就只能小林自担', correct: false, note: '立法正是为破解这一困境。' }
+      ]
+    },
+    lawpick: {
+      prompt: '适用法条（选2张）：',
+      options: ['c_safety_duty', 'c_fault', 'c_burden', 'c_bfp'],
+      correct: ['c_safety_duty', 'c_burden'],
+      notes: { c_safety_duty: '物业安保义务的直接依据。', c_burden: '让举证不能者承担不利后果。', c_fault: '过错责任一般条款，但撑不起物业这条线。', c_bfp: '善意取得是物权规则，与高空抛物争点无关，打出即适用错误。' }
+    },
+    doc: {
+      prompt: '起诉状落点：',
+      options: [
+        { text: '物业承担未尽安保义务的侵权责任＋可能加害使用人依法补偿', correct: true },
+        { text: '请求判处全楼住户拘役', correct: false }
+      ]
+    },
+    moral: {
+      text: '开庭前夜，物业经理提着两条烟找到你："小律师，撤诉吧，五千元辛苦费。"',
+      options: [
+        { text: '收下钱，劝小林和解', gold: 50, fame: -12, selfish: 1, note: '你听见自己心里有什么东西塌了一角。（徇私+1）' },
+        { text: '退回烟钱，转告小林：庭上见', fame: 6, persona: { tie: 2 }, note: '铁面留名。当晚小林给你发来一句"谢谢"。（声望+6）' }
+      ]
+    },
+    battle: {
+      enemy: '物业法务 · 郑经理', enemyLv: 1, hp: 46, mp: 8,
+      taunt: '告示我们贴了，锅我们不背。',
+      moves: [
+        { name: '免责告示甩锅', type: 'atk', tag: 'text', power: 11, text: '举起塑封的"禁止高空抛物"告示牌。' },
+        { name: '住户信息封锁', type: 'atk', tag: 'evidence', power: 10, text: '"业主名单是隐私，我不给。"' },
+        { name: '程序马拉松', type: 'atk', tag: 'procedural', power: 8, text: '申请追加全楼528户为第三人，拖垮庭审。' }
+      ],
+      winText: '判决物业承担未尽安保义务责任，住户们依法补偿。小林拆了绷带给你竖大拇指。',
+      loseText: '物业全身而退，小林的医药费还差一大截。'
+    }
+  },
+  {
+    id: 'k3', stage: 'study', term: 3, name: '开除学籍风暴（校园处分纠纷）', kind: 'admin', kindName: '行政诉讼 · 高校处分',
+    intro: '大三学生阿哲被指"协助作弊"，学校当晚红头文件直接开除学籍，没有听证、没有申辩、处分书没送达。阿哲父亲握着重病诊断书来找你："娃一辈子完了，你给评评理。"',
+    tag: 'admin', difficulty: 2,
+    reward: { gold: 70, fame: 12, lili: 8, exp: { xzf: 14, xz: 8, ssf: 6 } },
+    evidence: {
+      prompt: '阅卷取证：哪些是程序违法的铁证？',
+      options: [
+        { text: '学校从未组织听证的会议记录空白页', correct: true, note: '程序正义的缺失白纸黑字。' },
+        { text: '开除决定作出当日即生效的落款日期', correct: true, note: '未给学生申辩期。' },
+        { text: '处分决定书从未送达的签收记录缺失', correct: true, note: '送达是生效的前提。' },
+        { text: '阿哲高中时的检讨书', correct: false, note: '翻旧账不是证据，是偏见。' }
+      ]
+    },
+    qualify: {
+      prompt: '定性：本案核心违法点在哪？',
+      options: [
+        { text: '处分高校学生须遵循正当程序，开除学籍直接影响受教育权，程序严重违法可撤销', correct: true, note: '参照田永诉北京科技大学案确立的正当程序规则。' },
+        { text: '学校自治，法院管不着', correct: false, note: '开除学籍改变学生身份，具有可诉性。' },
+        { text: '作弊实体违纪，程序瑕疵无所谓', correct: false, note: '程序不是"无所谓"，是生死线。' }
+      ]
+    },
+    lawpick: {
+      prompt: '适用法条（选2张）：',
+      options: ['c_edushield', 'c_procedure', 'c_punitive', 'c_oathpay'],
+      correct: ['c_edushield', 'c_procedure'],
+      notes: { c_edushield: '宪法受教育权撑起防御。', c_procedure: '违反法定程序的行政行为应予撤销。', c_punitive: '消费欺诈条款乱入=适用法律错误。', c_oathpay: '本案未经复议，此条空转。' }
+    },
+    doc: {
+      prompt: '起诉状落点：',
+      options: [
+        { text: '请求撤销开除学籍决定，判令学校重新作出处理并恢复学籍', correct: true },
+        { text: '请求校长向阿哲道歉并罚款十万', correct: false }
+      ]
+    },
+    moral: {
+      text: '学院教务口谕转达："撤诉，阿哲的奖学金明年继续评。"',
+      options: [
+        { text: '撤诉保奖学金', fame: -10, selfish: 1, note: '阿哲默默退出了你的联系人列表。（徇私+1）' },
+        { text: '把这句话提交为证据', fame: 8, persona: { tie: 3 }, note: '"涉嫌施压干预案件"——你把它写进了证据目录。' }
+      ]
+    },
+    battle: {
+      enemy: '高校法律顾问 · 斯校长', enemyLv: 2, hp: 58, mp: 10,
+      taunt: '校有校规。开除一个，教育一群。',
+      moves: [
+        { name: '校规如山压顶', type: 'atk', tag: 'text', power: 13, text: '搬出《学生违纪处理办法》第38条。' },
+        { name: '程序合法假面', type: 'atk', tag: 'procedural', power: 10, text: '"我们开过会了——虽然没通知他。"' },
+        { name: '舆论牌', type: 'atk', tag: 'evidence', power: 12, text: '"家长带着重病诊断书来，是道德绑架！"' }
+      ],
+      winText: '法院确认处分程序严重违法，撤销开除决定。阿哲拿着复学通知书在校门口哭了。',
+      loseText: '"学校自治"赢了一局，阿哲的学籍档案永久定格在"开除"。'
+    }
+  },
+  {
+    id: 'k4', stage: 'study', term: 3, name: '菜农卖菜赚20元被罚30万', kind: 'admin', kindName: '行政处罚 · 过罚失衡',
+    intro: '63岁菜农老魏在早市卖自种蔬菜，检出农残超标的小份"尾市处理品"违法所得20元，市监局开出：没收违法所得20元、罚款30万元。老魏蹲在执法车旁不肯走。',
+    tag: 'admin', difficulty: 2,
+    reward: { gold: 80, fame: 14, lili: 8, exp: { xzf: 16, fl: 6, ssf: 4 } },
+    evidence: {
+      prompt: '阅卷取证：复议申请该钉住哪些材料？',
+      options: [
+        { text: '销售台账：涉案蔬菜仅5斤，获利20元', correct: true, note: '违法所得与危害程度极小。' },
+        { text: '老魏从未有过同类违法记录', correct: true, note: '初犯，且及时下架改正。' },
+        { text: '处罚决定书未经负责人集体讨论的签发单', correct: true, note: '大额罚款的法定程序缺口。' },
+        { text: '隔壁摊主评价"老魏菜好吃"', correct: false, note: '口碑救不了程序。' }
+      ]
+    },
+    qualify: {
+      prompt: '定性：本案最锋利的违法点？',
+      options: [
+        { text: '违法所得20元而罚款30万，处罚与违法行为事实性质情节明显不相称，违反过罚相当原则', correct: true, note: '行政处罚法第5条第2款。' },
+        { text: '农残超标就该重罚，没有问题', correct: false, note: '重罚不等于合法。' },
+        { text: '市监局无权罚款', correct: false, note: '主体适格，问题在裁量。' }
+      ]
+    },
+    lawpick: {
+      prompt: '适用法条（选2张）：',
+      options: ['c_proportion', 'c_firstno', 'c_burden', 'c_selfdef'],
+      correct: ['c_proportion', 'c_firstno'],
+      notes: { c_proportion: '比例原则压制，行政法神技。', c_firstno: '初次、轻微、及时改正，可不予处罚。', c_burden: '举证规则可用但非主攻。', c_selfdef: '正当防卫？这是对菜农执法，打出即适用错误。' }
+    },
+    doc: {
+      prompt: '复议申请书落点：',
+      options: [
+        { text: '请求撤销处罚决定，责令重作并适用"首违不罚"', correct: true },
+        { text: '请求赔偿老魏精神损失一百万元', correct: false }
+      ]
+    },
+    battle: {
+      enemy: '市监局法制科 · 严科长', enemyLv: 2, hp: 60, mp: 12,
+      taunt: '舌尖上的安全，就得下重典！',
+      moves: [
+        { name: '重典治市锤', type: 'atk', tag: 'text', power: 15, text: '搬出"四个最严"文件拍案。' },
+        { name: '裁量基准护甲', type: 'def', tag: 'def', shield: 12, text: '举起《处罚裁量基准》挡在身前。' },
+        { name: '程序闪避', type: 'atk', tag: 'procedural', power: 9, text: '"集体讨论记录在找，先休会。"' }
+      ],
+      winText: '复议机关认定过罚明显失衡，撤销处罚。严科长散会时对你点了点头："下回把程序做扎实。"',
+      loseText: '"重典"逻辑赢了。老魏的摊位再没出过早市。'
+    }
+  },
+  {
+    id: 'k5', stage: 'intern', term: 1, name: '深夜反杀入侵者案', kind: 'crime', kindName: '刑事案件 · 正当防卫',
+    intro: '独居女程序员唐蕾凌晨被醉酒的邻居撬窗闯入掐颈，挣脱后抓起床头剪刀刺中对方，致重伤二级。检方指控：故意伤害，防卫明显超过必要限度。你受法律援助指派，担任辩护人。',
+    tag: 'crime', difficulty: 3,
+    reward: { gold: 100, fame: 16, lili: 10, exp: { xf: 18, ssf: 10 } },
+    evidence: {
+      prompt: '阅卷取证：哪些证据支撑防卫性质？',
+      options: [
+        { text: '唐蕾颈部皮下出血的法医验伤照片', correct: true, note: '证明存在正在进行的现实暴力侵害。' },
+        { text: '撬痕方向与窗扣断裂形态勘验笔录', correct: true, note: '入侵属实，非法侵入在先。' },
+        { text: '凌晨1:47报警通话录音', correct: true, note: '即时求助，排除报复性伤害。' },
+        { text: '唐蕾前男友的聊天记录（与本案无关）', correct: false, note: '把私生活拖进法庭，会被审判长当庭制止。' }
+      ]
+    },
+    qualify: {
+      prompt: '定性：辩护的落点？',
+      options: [
+        { text: '面临行凶等严重危及人身安全的暴力侵害，防卫致重伤不属防卫过当，成立正当防卫', correct: true, note: '刑法第20条，并参照昆山反杀案后激活的无限防卫权适用精神。' },
+        { text: '构成故意伤害但请酌定从轻', correct: false, note: '未打掉不法侵害前提，退到了错误阵地。' },
+        { text: '唐蕾构成正当防卫但需赔偿', correct: false, note: '依法不负刑事责任，也无民事赔偿。' }
+      ]
+    },
+    lawpick: {
+      prompt: '适用法条（选2张）：',
+      options: ['c_selfdef', 'c_nullum', 'c_punitive', 'c_bfp'],
+      correct: ['c_selfdef', 'c_nullum'],
+      notes: { c_selfdef: '防卫性质的正面认定。', c_nullum: '罪刑法定屏障，挡住"死者重伤=必有罪"的推定。', c_punitive: '惩罚性赔偿条款在刑案乱入=适用错误。', c_bfp: '善意取得与本案无关。' }
+    },
+    doc: {
+      prompt: '辩护词落点：',
+      options: [
+        { text: '依法认定正当防卫，建议宣告无罪', correct: true },
+        { text: '求法庭看在女性弱势从轻三年', correct: false }
+      ]
+    },
+    moral: {
+      text: '被害人母亲在法院门口塞给你一沓现金："让他也坐几年牢，不然我这口气咽不下。"',
+      options: [
+        { text: '收下，庭上把防卫说成互殴', gold: 80, fame: -20, selfish: 2, note: '唐蕾被判三年。你在法院走廊吐了。（徇私+2，声望-20）' },
+        { text: '拒绝，并如实提交她的诉求书', fame: 10, persona: { yan: 2, ren: 1 }, note: '你把情绪挡在程序外。' }
+      ]
+    },
+    battle: {
+      enemy: '公诉席 · 姜检察官', enemyLv: 3, hp: 74, mp: 14,
+      taunt: '重伤二级是铁的事实，防卫过当就是过当。',
+      moves: [
+        { name: '结果归罪冲撞', type: 'atk', tag: 'evidence', power: 16, text: '把重伤鉴定报告拍在庭上："看结果！"' },
+        { name: '限度论切割', type: 'atk', tag: 'text', power: 14, text: '"掐脖子和剪刀，力量不对等！"' },
+        { name: '补充侦查拖延', type: 'atk', tag: 'procedural', power: 10, text: '申请庭后补充勘验。' },
+        { name: '有罪推定雾', type: 'debuff', tag: 'debuff', power: 0, text: '"独居女性深夜未锁窗，本身就有过错。"——法庭空气降了几度。' }
+      ],
+      winText: '合议庭采纳辩护意见：正当防卫，无罪！唐蕾在旁听席捂住嘴，眼泪砸在栏杆上。',
+      loseText: '"防卫过当"四个字落进判决书，三年有期徒刑。'
+    }
+  },
+  {
+    id: 'k6', stage: 'intern', term: 2, name: '拒绝违法加班遭辞退', kind: 'labor', kindName: '劳动仲裁 · 违法解除',
+    intro: '运营林姐连续两月被要求"996义务奉献"，一次拒绝通宵加班后被公司以"严重违反规章制度"辞退，零补偿。公司规章从未公示，考勤打卡数据由公司掌握但拒绝提交。',
+    tag: 'labor', difficulty: 2,
+    reward: { gold: 90, fame: 10, lili: 7, exp: { mf: 10, ssf: 12 } },
+    evidence: {
+      prompt: '阅卷取证：仲裁申请书挂上哪些材料？',
+      options: [
+        { text: '微信"自愿放弃加班费"群通知截图', correct: true, note: '强制加班制度化的直接证据。' },
+        { text: '辞退通知书上"严重违反规章制度"却无制度依据条款', correct: true, note: '制度未公示，不能作为处理依据。' },
+        { text: '林姐两年工资流水', correct: true, note: '补偿基数算得清。' },
+        { text: '同事匿名证言：林姐经常迟到', correct: false, note: '未出庭证言+与公司利益相反，会被打掉。' }
+      ]
+    },
+    qualify: {
+      prompt: '定性：',
+      options: [
+        { text: '规章制度未经民主程序与公示不得作为处理依据，解除构成违法，应支付二倍经济补偿的赔偿金', correct: true, note: '劳动合同法第47、87条。' },
+        { text: '拒绝工作安排属违纪，解除合法', correct: false, note: '违法加班命令本身无效。' },
+        { text: '双方协商解除，给N即可', correct: false, note: '单方辞退不是协商。' }
+      ]
+    },
+    lawpick: {
+      prompt: '适用法条（选2张）：',
+      options: ['c_unionproc', 'c_severance', 'c_edu_punish', 'c_proportion'],
+      correct: ['c_unionproc', 'c_severance'],
+      notes: { c_unionproc: '单方解除须事先通知工会——公司没做。', c_severance: '2N赔偿金的算术。', c_edu_punish: '行政处罚法条文乱入劳动仲裁=适用错误。', c_proportion: '比例原则打民事相对方，同样乱。' }
+    },
+    doc: {
+      prompt: '仲裁请求落点：',
+      options: [
+        { text: '确认违法解除，裁令支付二倍经济补偿标准的赔偿金', correct: true },
+        { text: '请求追究老板刑事责任', correct: false }
+      ]
+    },
+    moral: null,
+    battle: {
+      enemy: '公司法务总监 · 钱总', enemyLv: 2, hp: 62, mp: 12,
+      taunt: '制度就是制度。不奉献的人，我们不需要。',
+      moves: [
+        { name: '家规铁幕', type: 'atk', tag: 'text', power: 13, text: '宣读从未公示的《员工手册》。' },
+        { name: '考勤数据黑洞', type: 'atk', tag: 'evidence', power: 12, text: '"打卡数据？系统坏了，没有。"' },
+        { name: '工会牌位', type: 'def', tag: 'def', shield: 10, text: '"我司设有工会"——但拿不出任何通知记录。' }
+      ],
+      winText: '仲裁庭认定违法解除，裁决2N赔偿金。林姐发来消息："下个月交房租啦，谢谢你。"',
+      loseText: '"系统坏了"挡住了考勤，林姐只拿到一句"回去等通知"。'
+    }
+  },
+  {
+    id: 'k7', stage: 'career', term: 1, name: '错误羁押国家赔偿案', kind: 'state', kindName: '国家赔偿 · 证据不足释放',
+    intro: '老陈被以涉嫌盗窃羁押40日，因证据不足不起诉释放。侦查阶段的关键辨认程序没有见证人，监控调取超期。老陈出狱后佝偻了一圈，申请国家赔偿。你是他的代理人（律师线）／审查承办人（公职线）／合规顾问（法务线视角复盘）。',
+    tag: 'state', difficulty: 3,
+    reward: { gold: 120, fame: 18, lili: 12, exp: { ssf: 14, xz: 10, xf: 8 } },
+    evidence: {
+      prompt: '阅卷取证：',
+      options: [
+        { text: '不起诉决定书（证据不足，不构成犯罪）', correct: true, note: '终止追究刑事责任的法定文书。' },
+        { text: '看守所40日羁押期限凭证', correct: true, note: '侵犯人身自由的天数就是赔偿的刻度。' },
+        { text: '辨认笔录无见证人签名页', correct: true, note: '程序硬伤，动摇整个证据链。' },
+        { text: '老陈邻里的"他平时老实"联名信', correct: false, note: '品格证据救不了程序账。' }
+      ]
+    },
+    qualify: {
+      prompt: '定性：',
+      options: [
+        { text: '对公民采取逮捕措施后决定不起诉终止追究刑责的，受害人有取得赔偿的权利，按日折算人身自由赔偿金', correct: true, note: '国家赔偿法第17条、第33条。' },
+        { text: '证据不足不等于无罪，不予赔偿', correct: false, note: '存疑不起诉即属终止追究刑责的法定情形。' },
+        { text: '只能向办案人员个人追偿', correct: false, note: '赔偿义务机关是国家机关。' }
+      ]
+    },
+    lawpick: {
+      prompt: '适用法条（选2张）：',
+      options: ['c_dailypay', 'c_doubt', 'c_proportion', 'c_consumer'],
+      correct: ['c_dailypay', 'c_doubt'],
+      notes: { c_dailypay: '按上年度职工日平均工资折算。', c_doubt: '证据不足的无罪逻辑。', c_proportion: '比例原则不是本案的钥匙。', c_consumer: '消保法条款在此纯属适用错误。' }
+    },
+    doc: {
+      prompt: '赔偿申请书落点：',
+      options: [
+        { text: '按40日×上年度职工日平均工资计算人身自由赔偿金，并申请精神损害抚慰金', correct: true },
+        { text: '索赔一个亿', correct: false }
+      ]
+    },
+    moral: {
+      text: '办案单位联络人委婉提醒："赔偿金走财政拨款，拖一拖，老陈就回乡下种地了。"',
+      options: [
+        { text: '接受"拖字诀"，先拿和解费', gold: 60, fame: -14, selfish: 1, note: '老陈在和解协议上按了手印，眼神空了。（徇私+1）' },
+        { text: '依法顶格推进，一分钱不少', fame: 12, persona: { ren: 2, yan: 2 }, note: '你坚持按40日足额计算并追加精神抚慰。' }
+      ]
+    },
+    battle: {
+      enemy: '赔偿义务机关代理 · 娄科长', enemyLv: 3, hp: 80, mp: 14,
+      taunt: '程序是小节，抓人是尽职。',
+      moves: [
+        { name: '无错推定盾', type: 'def', tag: 'def', shield: 14, text: '"办案当时具备合理嫌疑。"' },
+        { name: '财政困难牌', type: 'atk', tag: 'evidence', power: 13, text: '"今年预算紧，您多理解。"' },
+        { name: '程序瑕疵遮羞布', type: 'atk', tag: 'procedural', power: 12, text: '"辨认没见证人？当时人手不够嘛。"' },
+        { name: '拖延消耗战', type: 'atk', tag: 'procedural', power: 9, text: '申请中止审查，先过完这个季度。' }
+      ],
+      winText: '赔偿决定下达：40日按日折算＋精神损害抚慰金。老陈把赔偿决定书镶在相框里，挂在堂屋。',
+      loseText: '"再研究研究"成了本案的最终结论。'
+    }
+  }
+];
+
+</script>
+<script>
+/* SECTION: data-exams 真实考试副本（题库为教学示意） */
+LAW_DATA.exams = [
+  {
+    id: 'final', name: '期末考试', stage: 'study', unlockTerm: 2,
+    desc: '六科随机抽考。挂科将掉声望、触发「学业警示」标签并限制实习。',
+    pass: 60, cost: 10,
+    reward: { gold: 40, fame: 6, title: '绩点之光', buff: { name: '期末加成', desc: '下场辩论伤害+10%', critUp: 10, dur: 1 } },
+    failEffect: { fame: -15, san: -8, label: '学业警示', note: '辅导员把你叫到办公室："再挂两科，学位危险。"' },
+    questions: [
+      { q: '下列哪一项不属于我国法的正式渊源？', a: ['宪法', '法律、行政法规', '最高人民法院指导性案例', '地方性法规'], c: 2, why: '指导性案例具有"应当参照"效力，但通说不列为正式渊源。', subj: 'fl' },
+      { q: '《宪法》规定，我国的一切权力属于？', a: ['人民', '公民', '全国人民代表大会', '工人阶级'], c: 0, why: '宪法第2条：中华人民共和国的一切权力属于人民。', subj: 'xz' },
+      { q: '限制民事行为能力的未成年人为？', a: ['不满8周岁', '8周岁以上不满18周岁', '16周岁以上不满18周岁', '14周岁以上不满18周岁'], c: 1, why: '民法典第19条。', subj: 'mf' },
+      { q: '甲欲杀乙而误将丙当作乙杀死，属于？', a: ['打击错误', '对象错误，不影响故意杀人既遂', '过失致人死亡', '意外事件'], c: 1, why: '同一构成要件内的对象错误不阻却故意。', subj: 'xf' },
+      { q: '下列属于行政处罚种类的是？', a: ['罚金', '拘留（司法拘留）', '暂扣许可证件', '没收家庭全部财产'], c: 2, why: '行政处罚法第9条；罚金是刑罚，司法拘留不是处罚。', subj: 'xzf' },
+      { q: '民事诉讼中，一般的证明标准是？', a: ['排除合理怀疑', '高度可能性', '优势证据即可无任何要求', '确实充分'], c: 1, why: '民诉法解释第108条：高度可能性。', subj: 'ssf' }
+    ]
+  },
+  {
+    id: 'fkao', name: '法考模拟卷', stage: 'intern', unlockTerm: 1,
+    desc: '客观题+主观题。通关获得称号「法考上岸」，全属性判定永久+5。',
+    pass: 65, cost: 15,
+    reward: { gold: 80, fame: 12, title: '法考上岸', attrBuff: 5, note: '证书复印件贴在了宿舍墙上。' },
+    failEffect: { fame: -6, san: -10, note: '客观题差4分。你把错题本翻烂了，理智-10，但刷题经验没白刷（全属性+4）。' },
+    questions: [
+      { q: '关于罪刑法定原则，下列哪一说法正确？', a: ['允许不利于被告人的事后法', '禁止类推解释但允许有利于被告人的类推', '允许绝对不定期刑', '习惯法可作为刑法渊源'], c: 1, why: '有利于被告人的类推解释不被绝对禁止。', subj: 'xf' },
+      { q: '善意取得的构成要件不包括？', a: ['受让人受让时善意', '以合理价格转让', '完成交付或登记', '转让人与受让人存在长期合作关系'], c: 3, why: '民法典第311条三要件+处分权人无权处分前提。', subj: 'mf' },
+      { q: '某市场监管局对同一行为给予两次罚款，违反？', a: ['比例原则', '一事不再罚原则', '信赖保护原则', '程序正当原则'], c: 1, why: '行政处罚法第29条：同一违法行为不得给予两次以上罚款。', subj: 'xzf' },
+      { q: '刑事诉讼中"排除合理怀疑"适用于？', a: ['民事合同效力', '有罪认定的证明标准', '行政程序合法性', '仲裁裁决执行力'], c: 1, why: '刑诉法第55条第2款。', subj: 'ssf' },
+      { q: '宪法规定，修改宪法的提案主体是？', a: ['国务院', '全国人大常委会或五分之一以上全国人大代表', '中共中央', '最高人民法院'], c: 1, why: '宪法第64条。', subj: 'xz' },
+      { q: '下列哪一情形不成立正当防卫？', a: ['对正在进行的不法侵害反击', '防卫明显超过必要限度造成重大损害', '对正在行凶的暴力侵害反击致其死亡', '侵害结束后为追回财产当场使用适度强力'], c: 1, why: '防卫过当应负刑责（减轻免除）；C项成立无限防卫权。', subj: 'xf' },
+      { q: '主观题：简述比例原则的三派生原则。', a: ['适当性、必要性、均衡性', '合法、合理、及时', '公开、公平、公正', '主体、内容、程序'], c: 0, why: '目的正当之外：适当性（妥当性）、必要性（最小侵害）、均衡性（狭义比例）。', subj: 'xzf' }
+    ]
+  },
+  {
+    id: 'gongkao', name: '公考副本：行测+申论+面试', stage: 'intern', unlockTerm: 1,
+    desc: '行测速答、申论要点、结构化面试三连。通关进入公职面试圈，锁定法院/检察院/司法局岗位。',
+    pass: 70, cost: 20,
+    reward: { gold: 100, fame: 15, title: '上岸人', careerUnlock: 'gov' },
+    failEffect: { fame: -5, san: -12, note: '行测资料分析没做完。面试圈进的岗位与你擦肩而过。' },
+    questions: [
+      { q: '（言语理解）"法安天下，德润人心。"下列理解正确的是？', a: ['法律与道德相辅相成', '德治可以替代法治', '法律是道德的全部', '道德不具有约束力'], c: 0, why: '坚持依法治国和以德治国相结合。', subj: 'fl' },
+      { q: '（数量关系）某法院上半年结案4200件，同比增两成，去年同期结案约？', a: ['3500件', '3360件', '5040件', '4000件'], c: 0, why: '4200÷1.2=3500。', subj: 'xz' },
+      { q: '（判断推理）所有法官都通过法考；小张未通过法考。可推出？', a: ['小张不是法官', '小张可能是法官', '有的法官没通过法考', '无法推出'], c: 0, why: '否后必否前。', subj: 'fl' },
+      { q: '（申论要点）基层普法最忌？', a: ['案例化', '照本宣科念条文', '方言讲解', '院坝会'], c: 1, why: '内容要"翻译"成群众语言，宣讲最忌照本宣科。', subj: 'xzf' },
+      { q: '（面试）当事人情绪激动在信访窗口拍桌，你怎么办？', a: ['叫保安带离', '先稳情绪、记录诉求、依法限时答复', '当场满足其全部要求', '关闭窗口回避'], c: 1, why: '结构化面试应急应变题：情绪安抚+程序答复。', subj: 'ssf' }
+    ]
+  }
+];
+
+/* SECTION: data-events 随机事件 */
+LAW_DATA.randEvents = [
+  { id: 'e_podium', name: '当事人闹访', emoji: '⚖️', cond: { stage: ['intern', 'career'] },
+    text: '败诉方的大伯拎着铺盖卷坐在办公区门口："不给说法就不走！"同事看你。',
+    options: [
+      { text: '倒杯茶，把裁判文书逐条讲给他听', fame: 6, san: -4, persona: { ren: 2 }, note: '讲了四十分钟，大伯嘟囔着走了。口碑传开：这人肯解释。' },
+      { text: '叫安保清场，继续办公', fame: -6, persona: { tie: 1 }, note: '效率赢了，走廊里多了一句"官腔"。' }
+    ] },
+  { id: 'e_evidence_fire', name: '证据灭失危机', emoji: '🔥', cond: { stage: ['study', 'intern', 'career'] },
+    text: '深夜档案柜水管爆裂，一份明天要用的关键原件泡了水，只抢救出模糊复印件。',
+    options: [
+      { text: '连夜申请原件调取+公证补链', gold: -20, fame: 5, exp: { ssf: 10 }, note: '公证费自掏。程序救回了证据链。' },
+      { text: '赌一把，交复印件', san: -8, note: '对方律师当庭质证"三性"不认可。（理智-8，下场辩论压力剧增）', debuff: { name: '证据链瑕疵', critDown: 10, dur: 1 } }
+    ] },
+  { id: 'e_boss', name: '上级打招呼', emoji: '📞', cond: { stage: ['intern', 'career'] },
+    text: '领导转发一条消息："这个案子，照顾一下某某面子。"',
+    options: [
+      { text: '顶住，依法独立处理', fame: 8, persona: { tie: 2, yan: 1 }, note: '你把消息截图归档，在办案说明里写了"无干预"。', buff: { name: '风骨', desc: '下场辩论伤害+15%', dmgUp: 15, dur: 1 } },
+      { text: '照办，案子"平衡"处理', fame: -10, selfish: 1, gold: 30, note: '奖金到账那晚你失眠了。（徇私+1）' }
+    ] },
+  { id: 'e_hot', name: '舆论风暴', emoji: '🌪️', cond: { stage: ['intern', 'career'] },
+    text: '你办的案子被剪成15秒短视频，配上惊悚标题，阅读量破百万，评论区在冲你。',
+    options: [
+      { text: '按程序发布案情通报，一句话不越', fame: 7, san: -5, exp: { xzf: 6 }, note: '通报很克制，风向慢慢扭回来了。' },
+      { text: '亲自下场对线', fame: -8, san: 5, note: '你爽了，单位宣传部不爽了。' }
+    ] },
+  { id: 'e_scholar', name: '学术讲座邀请', emoji: '🎓', cond: { stage: ['study'] },
+    text: '刑法大佬开讲座，讲的是"正当防卫的司法激活"，和你的模拟法庭选题高度相关。',
+    options: [
+      { text: '逃掉晚自习去听', exp: { xf: 14 }, san: -3, note: '笔记抄了三页。（刑法+14）' },
+      { text: '老老实实上晚自习', exp: { fl: 6, ssf: 6 }, note: '自习也没亏。' }
+    ] },
+  { id: 'e_moot', name: '模拟法庭集训', emoji: '🏛️', cond: { stage: ['study'] },
+    text: '法学院发布模拟法庭队员名单，入选者寒假集训，管两顿饭。',
+    options: [
+      { text: '报名并去拼辩位', energy: -10, exp: { ssf: 12, fl: 8 }, fame: 3, note: '你被对方一辩怼哭过一次，但成长肉眼可见。' },
+      { text: '把名额让给同学', persona: { ren: 1 }, note: '同学请你喝了一周奶茶。' }
+    ] },
+  { id: 'e_rent', name: '房东涨租', emoji: '🏠', cond: { stage: ['study', 'intern'] },
+    text: '房东："下季度涨三百，不讲理，合同写了提前通知就行。"',
+    options: [
+      { text: '翻合同逐条对线', exp: { mf: 10 }, gold: -10, note: '通知期不合规，最终只涨了一百。（民法+10）' },
+      { text: '认了，搬家的成本更高', gold: -30, note: '算了，时间也是成本。' }
+    ] },
+  { id: 'e_bar', name: '同学聚会·律师行业内幕', emoji: '🍻', cond: { stage: ['intern', 'career'] },
+    text: '师兄在红圈所，喝到第三杯开始讲"案源江湖"。',
+    options: [
+      { text: '认真记下行业门道', exp: { mf: 6, ssf: 6 }, gold: -30, note: '饭钱AA，但话是真的值钱。' },
+      { text: '早退回去写文书', exp: { xzf: 8 }, note: '文书写完，心里踏实。' }
+    ] }
+];
+
+/* SECTION: data-pufa 普法实践 */
+LAW_DATA.pufa = [
+  { id: 'p_country', name: '乡村普法·院坝会', cost: 12, reward: { fame: 9, gold: 20, exp: { xzf: 8, fl: 6 }, buff: { name: '基层经验', desc: '案件经验+15%（持续2学期）', expUp: 15, dur: 2 } },
+    line: '搬条凳坐在院坝里，用四川话给大爷大妈讲："幺弟，借条要写清还钱日期，不然诉讼时效都要飞咯——哦不，是才刚开始算！"' },
+  { id: 'p_community', name: '社区法律咨询台', cost: 10, reward: { fame: 7, gold: 15, exp: { mf: 8, ssf: 6 } },
+    line: '一上午接了17个问题，14个关于楼上漏水。你把《民法典》相邻关系条款讲出了脱口秀效果。' },
+  { id: 'p_campus', name: '校园防欺凌法治课', cost: 8, reward: { fame: 6, exp: { xf: 6, xz: 6 } },
+    line: '初中生问你："被起侮辱性外算不算违法？"你认真回答："先告诉老师，这涉及人格权。"课后教导主任找你加课。' },
+  { id: 'p_hotline', name: '12348热线志愿坐班', cost: 10, reward: { fame: 5, gold: 10, exp: { ssf: 8 } },
+    line: '连续接线4小时。凌晨还有老人问"收到验证码能不能帮孙子领红包"——你拦下了一起未遂诈骗。' }
+];
+
+/* SECTION: data-career 三分支职业路线 */
+LAW_DATA.careers = {
+  gov: {
+    id: 'gov', name: '公职司法线', tagline: '稳、权威、仕途养成', color: '#c0392b',
+    icon: '🏛️',
+    desc: '公考上岸进入司法系统，在编制内一步步把案子办成铁案。',
+    need: { fame: 45, exam: 'gongkao', title: '上岸人' },
+    nodes: [
+      { name: '司法局科员', cases: ['k4'], need: { studyTerm: 0, attr: { xzf: 30 } }, salary: 50, actions: ['执法监督巡查', '案卷审查', '听证程序组织'] },
+      { name: '法官助理', cases: ['k5'], need: { rank: '初级法律人', attr: { ssf: 60 } }, salary: 70, actions: ['阅卷与庭审记录', '文书初稿起草', '类案检索报告'] },
+      { name: '员额法官', cases: ['k7', 'k3'], need: { rank: '中级法律人', fame: 70 }, salary: 110, actions: ['主审疑难案件', '专业法官会议发言', '判后答疑与普法'] },
+      { name: '庭长 · 审判专家', cases: [], need: { rank: '高级法律人', fame: 90, moral: 0 }, salary: 160, actions: ['主持审委会', '发布参考性案例', '带队巡回审判'] }
+    ],
+    ending: { name: '身着法袍的人', text: '宣誓那天你把法徽戴得很正。多年后你主审的案子写进教材，署名只有一句："审判长。"' }
+  },
+  lawyer: {
+    id: 'lawyer', name: '律师执业线', tagline: '自由、高收益、高难度', color: '#2c6e49',
+    icon: '💼',
+    desc: '从实习律师熬起，案源自己找、风险自己扛，庭辩赢了才有饭吃。',
+    need: { rank: '初级法律人', exam: 'fkao' },
+    nodes: [
+      { name: '实习律师', cases: ['k6'], need: {}, salary: 25, actions: ['带教律师卷宗整理', '旁听与记录', '法律检索报告'] },
+      { name: '执业律师', cases: ['k1', 'k2'], need: { rank: '见习法律人' }, salary: 60, actions: ['独立接案', '当事人谈判', '出庭代理'] },
+      { name: '专项律师', cases: ['k5'], need: { rank: '中级法律人', attr: { xf: 90 } }, salary: 120, actions: ['刑辩专案', '大案要案攻关', '庭前会议'] },
+      { name: '知名大律师', cases: ['k7'], need: { rank: '高级法律人', fame: 85, moral: 0 }, salary: 200, actions: ['标志性辩护', '律所管理', '公益诉讼领衔'] }
+    ],
+    ending: { name: '法庭上的名字', text: '你的名字成了当事人嘴里的"那个律师"。卷宗越摞越高，每一次出庭都像第一次。' }
+  },
+  legal: {
+    id: 'legal', name: '企业法务线', tagline: '安稳、职场向、风险守门人', color: '#34618e',
+    icon: '🏢',
+    desc: '坐在业务与监管中间的人：合同、合规、劳动纠纷，救火与防火。',
+    need: { studyAvg: 60 },
+    nodes: [
+      { name: '法务专员', cases: ['k6'], need: {}, salary: 40, actions: ['合同审查流水线', '劳动纠纷处理', '制度合规自查'] },
+      { name: '法务主管', cases: ['k1'], need: { rank: '初级法律人', attr: { mf: 80 } }, salary: 80, actions: ['重大合同谈判', '供应商合规审查', '纠纷调解'] },
+      { name: '合规负责人', cases: ['k2', 'k4'], need: { rank: '中级法律人', fame: 60 }, salary: 130, actions: ['反商业贿赂体系', '数据合规专项', '监管沟通'] },
+      { name: '法务总监', cases: [], need: { rank: '高级法律人', fame: 80, moral: 0 }, salary: 220, actions: ['经营决策法律风险评估', '董事会汇报', '总法律顾问'] }
+    ],
+    ending: { name: '公司里最稳的那道闸', text: '业务部门最怕你说"这个方案要改"，也最信你说"这个可以推"。' }
+  }
+};
+
+LAW_DATA.ranks = [
+  { name: '法学院新人', min: 0 },
+  { name: '见习法律人', min: 30 },
+  { name: '初级法律人', min: 65 },
+  { name: '中级法律人', min: 110 },
+  { name: '高级法律人', min: 170 }
+];
+
+LAW_DATA.badEndings = [
+  { id: 'b_disbar', at: 5, name: '执业证书被吊销', text: '徇私枉法的调查结论落在纸面。你交回工作证那天，走廊很长。', effect: '游戏结束 · 坏结局' },
+  { id: 'b_stop', at: 3, name: '停职检查', text: '纪检谈话室灯光很白。"先停下手里案子，写清楚。"' },
+  { id: 'b_credit', at: 2, name: '征信与诚信扣分', text: '执业诚信档案多了一行红字，当事人开始问"有没有前科"。' },
+  { id: 'b_fire', at: 1, name: '被单位通报批评', text: '内部通报挂着你的名字，会议室安静了三秒。' }
+];
+
+window.LAW_DATA = LAW_DATA;
+
+</script>
+<script>
+/* SECTION: engine 状态引擎 · 顶栏 · 校园养成 · 法条卡组 */
+(function () {
+  'use strict';
+  const D = window.LAW_DATA;
+  const G = (window.GAME = {});
+  const SAVE_KEY = 'law-academy-demo-v1';
+
+  /* ---------- 默认存档 ---------- */
+  function freshSave() {
+    const attr = {};
+    D.subjects.forEach(function (s) { attr[s.id] = s.id === 'fl' ? 12 : 8; });
+    return {
+      name: '你',
+      term: 1, stage: 'study', act: 5, actMax: 5,
+      energy: 100, san: 100, gold: 120, fame: 10, lili: 8,
+      rankExp: 0, rankIdx: 0,
+      attr: attr,
+      deck: D.cards.filter(c => c.starter).map(c => c.id),
+      owned: D.cards.filter(c => c.starter).map(c => c.id),
+      unlocked: {},           // 已解锁内容 id
+      doneCases: [],          // 已完成案件 id
+      caseScore: {},          // 案件 → 表现
+      wins: 0, losses: 0,
+      persona: { yan: 0, ren: 0, tie: 0, shi: 0, xue: 0 },
+      selfish: 0,             // 徇私值
+      titles: [], buffs: [], labels: [],
+      career: null, jobNode: -1, income: 0,
+      moralFlags: {},
+      log: [],
+      examScore: {},
+      view: 'campus',
+      createdAt: Date.now()
+    };
+  }
+
+  /* ---------- 存取 ---------- */
+  G.load = function () {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (raw) { const s = JSON.parse(raw); return Object.assign(freshSave(), s); }
+    } catch (e) { /* 存档损坏则重开 */ }
+    return freshSave();
+  };
+  G.save = function () { try { localStorage.setItem(SAVE_KEY, JSON.stringify(G.s)); } catch (e) { } };
+  G.reset = function () { localStorage.removeItem(SAVE_KEY); G.s = freshSave(); G.save(); G.renderAll(); G.toast('已重置存档', 'ok'); };
+
+  /* ---------- 工具 ---------- */
+  G.subj = function (id) { return D.subjects.find(s => s.id === id); };
+  G.card = function (id) { return D.cards.find(c => c.id === id); };
+  G.caseById = function (id) { return D.cases.find(c => c.id === id); };
+  G.levelOf = function (v) {
+    let i = 0;
+    D.levels.forEach(function (l, k) { if (v >= l.min) i = k; });
+    return { idx: i, name: D.levels[i].name, next: D.levels[i + 1] ? D.levels[i + 1].min : null };
+  };
+  G.avgAttr = function () {
+    const ids = Object.keys(G.s.attr);
+    return ids.reduce((a, k) => a + G.s.attr[k], 0) / ids.length;
+  };
+  G.rank = function () { return D.ranks[G.s.rankIdx]; };
+  G.primaryPersona = function () {
+    let best = null, v = -1;
+    Object.keys(G.s.persona).forEach(function (k) { if (G.s.persona[k] > v) { v = G.s.persona[k]; best = k; } });
+    return v >= 3 ? D.personas.find(p => p.id === best) : null;
+  };
+  G.hasBuff = function (name) { return G.s.buffs.some(b => b.name === name); };
+  G.buffVal = function (key) {
+    return G.s.buffs.reduce(function (a, b) { return a + (b[key] || 0); }, 0);
+  };
+  G.attrBonus = function (subjId) {
+    // 称号与 buff 带来的属性判定加成
+    let extra = 0;
+    if (G.s.titles.indexOf('法考上岸') >= 0) extra += 5;
+    return extra;
+  };
+  G.effAttr = function (subjId) { return G.s.attr[subjId] + G.attrBonus(subjId); };
+  G.addLog = function (text) {
+    G.s.log.unshift({ t: '第' + G.s.term + '学期 · ' + (G.s.stage === 'study' ? '在校' : G.s.stage === 'intern' ? '实习' : '执业'), x: text });
+    if (G.s.log.length > 60) G.s.log.length = 60;
+  };
+  G.gain = function (obj) {
+    const parts = [];
+    if (obj.gold) { G.s.gold += obj.gold; parts.push((obj.gold > 0 ? '+' : '') + obj.gold + ' 金币'); }
+    if (obj.fame) { G.s.fame = Math.max(0, G.s.fame + obj.fame); parts.push((obj.fame > 0 ? '声望+' : '声望') + obj.fame); }
+    if (obj.lili) { G.s.lili += obj.lili; parts.push('法理点+' + obj.lili); }
+    if (obj.san) { G.s.san = Math.max(0, Math.min(100, G.s.san + obj.san)); parts.push((obj.san > 0 ? '理智+' : '理智') + obj.san); }
+    if (obj.energy) { G.s.energy = Math.max(0, Math.min(100, G.s.energy + obj.energy)); parts.push('精力' + (obj.energy > 0 ? '+' : '') + obj.energy); }
+    if (obj.exp) Object.keys(obj.exp).forEach(function (k) {
+      const add = Math.round(obj.exp[k] * (1 + G.buffVal('expUp') / 100));
+      G.s.attr[k] = Math.min(300, G.s.attr[k] + add);
+      parts.push(G.subj(k).name + '+' + add);
+    });
+    if (parts.length) G.toast(parts.join('　'), 'ok');
+    return parts;
+  };
+  G.addRankExp = function (n) {
+    G.s.rankExp += n;
+    let idx = 0;
+    D.ranks.forEach(function (r, k) { if (G.s.rankExp >= r.min) idx = k; });
+    if (idx > G.s.rankIdx) {
+      G.s.rankIdx = idx;
+      G.addLog('段位晋升：<b>' + D.ranks[idx].name + '</b>');
+      G.dlg({
+        title: '段位晋升', sub: '法庭战绩被写进律所战绩墙',
+        html: '<div style="text-align:center;padding:14px"><div style="font-family:var(--serif);font-size:30px;color:var(--gold-lt)">' +
+          D.ranks[idx].name + '</div><p class="muted mt">逻辑与法理的双重积累，解锁更高阶案件与职业节点。</p></div>',
+        actions: [{ label: '继续', gold: true }]
+      });
+    }
+  };
+
+  /* ---------- toast ---------- */
+  G.toast = function (msg, cls) {
+    const box = document.getElementById('toast');
+    const el = document.createElement('div');
+    el.className = 'tst ' + (cls || '');
+    el.innerHTML = msg;
+    box.appendChild(el);
+    setTimeout(function () { el.classList.add('out'); setTimeout(function () { el.remove(); }, 320); }, 2600);
+    if (box.children.length > 4) box.firstChild.remove();
+  };
+
+  /* ---------- 弹窗 ---------- */
+  G.dlg = function (o) {
+    const mask = document.getElementById('mask'), dlg = document.getElementById('dlg');
+    dlg.innerHTML = '<h3>' + o.title + '</h3>' + (o.sub ? '<div class="dsub">' + o.sub + '</div>' : '') +
+      '<div id="dlgBody">' + o.html + '</div>' +
+      (o.actions ? '<div class="btnrow mt" id="dlgAct"></div>' : '');
+    const acts = dlg.querySelector('#dlgAct');
+    if (o.actions) o.actions.forEach(function (a, i) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn ' + (a.gold ? 'gold' : a.danger ? 'danger' : a.ghost ? 'ghost' : '');
+      b.innerHTML = a.label;
+      b.onclick = function () {
+        if (a.keep) { const r = a.fn && a.fn(dlg); if (r === false) return; G.closeDlg(); return; }
+        G.closeDlg();
+        if (a.fn) a.fn(dlg);
+      };
+      acts.appendChild(b);
+    });
+    mask.classList.add('on');
+    if (o.after) o.after(dlg);
+  };
+  G.closeDlg = function () { document.getElementById('mask').classList.remove('on'); };
+
+  /* ---------- 顶栏 ---------- */
+  const stageName = { study: '法学院在校', intern: '法律实习', career: '执业期' };
+  G.renderStats = function () {
+    const p = G.primaryPersona();
+    const items = [
+      { k: 'term', cls: '', label: '进度', val: '第' + G.s.term + '学期 · ' + stageName[G.s.stage], sub: '行动 ' + G.s.act + '/' + G.s.actMax },
+      { k: 'energy', cls: 'azur', label: '精力', val: G.s.energy + '%' },
+      { k: 'san', cls: 'vio', label: '理智', val: G.s.san },
+      { k: 'gold', cls: 'gold', label: '金币', val: G.s.gold },
+      { k: 'fame', cls: 'crim', label: '声望', val: G.s.fame },
+      { k: 'lili', cls: 'jade', label: '法理点', val: G.s.lili },
+      { k: 'rank', cls: '', label: '段位', val: G.rank().name, sub: '人格：' + (p ? p.name : '未定型') }
+    ];
+    document.getElementById('statChips').innerHTML = items.map(function (i) {
+      return '<span class="chip ' + i.cls + '" data-k="' + i.k + '"><span class="k">' + i.label + '</span><b>' + i.val + '</b>' +
+        (i.sub ? '<span class="k">· ' + i.sub + '</span>' : '') + '</span>';
+    }).join('');
+  };
+
+  /* ---------- 页签 ---------- */
+  const TABS = [
+    { id: 'campus', name: '校园养成', lock: () => false },
+    { id: 'deck', name: '法条卡组', lock: () => false },
+    { id: 'case', name: '案件办案', lock: () => false },
+    { id: 'court', name: '法庭辩论', lock: () => false },
+    { id: 'exam', name: '考试副本', lock: () => false },
+    { id: 'career', name: '生涯路线', lock: () => G.s.stage === 'study' && G.s.term < 3 },
+    { id: 'record', name: '档案日志', lock: () => false }
+  ];
+  G.renderTabs = function () {
+    document.getElementById('tabs').innerHTML = TABS.map(function (t) {
+      const locked = t.lock();
+      return '<button type="button" class="tab' + (G.s.view === t.id ? ' on' : '') + (locked ? ' lk' : '') + '" data-tab="' + t.id + '"' + (locked ? ' disabled' : '') + '>' +
+        t.name + (locked ? ' <span class="lock">🔒</span>' : '') + '</button>';
+    }).join('');
+    TABS.forEach(function (t) {
+      document.getElementById('view-' + t.id).classList.toggle('on', t.id === G.s.view);
+    });
+  };
+  G.go = function (v) { G.s.view = v; G.save(); G.renderAll(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
+  /* ---------- 属性卡渲染 ---------- */
+  G.attrPanel = function () {
+    return '<div class="grid g3">' + D.subjects.map(function (s) {
+      const v = G.s.attr[s.id], lv = G.levelOf(v);
+      const pct = lv.next ? Math.min(100, (v - D.levels[lv.idx].min) / (lv.next - D.levels[lv.idx].min) * 100) : 100;
+      return '<div class="subj">' +
+        '<span class="lv" style="color:' + s.color + '">' + lv.name + '</span>' +
+        '<div class="nm"><span class="badge" style="background:' + s.color + '">' + s.short + '</span>' + s.name + '</div>' +
+        '<div class="bar"><i style="width:' + pct + '%;background:linear-gradient(90deg,' + s.color + ',#e8c766)"></i></div>' +
+        '<div class="barlabel"><span>' + v + ' 点</span><span>' + (lv.next ? '距「' + lv.next + '」还差 ' + Math.max(0, lv.next - v) : '已达权威') + '</span></div>' +
+        '<div class="ds">' + s.desc + '</div></div>';
+    }).join('') + '</div>';
+  };
+
+  /* ---------- 校园视图 ---------- */
+  const COURSE_ACTIONS = [
+    { id: 'cls', name: '专业课听讲', icon: '📖', cost: { act: 1, energy: 12 }, tip: '选定一门课，扎实涨属性', kind: 'subj' },
+    { id: 'self', name: '图书馆自习', icon: '🕯️', cost: { act: 1, energy: 9 }, tip: '两科均衡提升，性价比之王', kind: 'two' },
+    { id: 'drill', name: '真题刷题', icon: '✍️', cost: { act: 1, energy: 14 }, tip: '涨属性并换少量兼职报酬', kind: 'subj' },
+    { id: 'moot', name: '模拟法庭', icon: '🏛️', cost: { act: 1, energy: 16 }, tip: '诉讼法/法理主涨，附带声望', kind: 'moot' },
+    { id: 'rest', name: '操场散步/早睡', icon: '🌙', cost: { act: 1 }, tip: '恢复精力与理智', kind: 'rest' },
+    { id: 'job', name: '奶茶店兼职', icon: '🧋', cost: { act: 1, energy: 16 }, tip: '换金币，属性不涨', kind: 'job' }
+  ];
+  const PRACTICE = [
+    { id: 'legal_clinic', name: '法律诊所值班', icon: '🩺', tip: '在校生也能接的真实援助案件', stage: ['study'], unlockNote: '法学院法律援助中心' }
+  ];
+
+  G.renderCampus = function () {
+    const el = document.getElementById('view-campus');
+    const s = G.s;
+    const stageTitle = { study: '法学院 · 养成期', intern: '律所/法院 · 实习期', career: stageCareerTitle() };
+    let h = '<div class="vhead"><h2>' + stageTitle[s.stage] + '</h2><p>' +
+      '六门必修即六项属性，直接决定<b class="gold">办案正确率、辩论伤害、考试通过率</b>与<b class="gold">职业失误规避</b>。每学期 ' + s.actMax + ' 点行动，用尽可结束学期。</p></div>';
+
+    /* 属性区 */
+    h += G.attrPanel();
+
+    /* buff / 标签 */
+    const tags = []
+      .concat(s.buffs.map(b => '<span class="statchip pos" title="' + (b.desc || '') + '">Buff：' + b.name + '（剩' + b.dur + '学期）</span>'))
+      .concat(s.labels.map(l => '<span class="statchip neg">负面：' + l + '</span>'))
+      .concat(s.titles.map(t => '<span class="statchip" style="border-color:var(--gold);color:var(--gold-lt)">称号：' + t + '</span>'))
+      .concat(s.titles.length ? [] : ['<span class="statchip">称号：暂无</span>']);
+    h += '<div class="chips-row mt">' + tags.join('') + '</div>';
+
+    /* 行动区 */
+    if (s.stage === 'study' || s.stage === 'intern') {
+      h += '<div class="panel mt"><h3 style="margin:0 0 4px;font-size:18px">' + (s.stage === 'study' ? '日常安排' : '实习日常') + '</h3>' +
+        '<p class="muted tiny" style="margin:0 0 12px">' + (s.stage === 'study' ? '上课、自习、刷题、模拟法庭提升属性；挂科会掉声望并限制实习。' : '实习期课程减少，重心转向办案与法考。') + '</p>' +
+        '<div class="grid g3">' + COURSE_ACTIONS.map(function (a) {
+          const can = s.act >= a.cost.act && (a.cost.energy ? s.energy >= a.cost.energy : true);
+          return '<button type="button" class="opt" data-act="' + a.id + '"' + (can ? '' : ' disabled') + '>' +
+            '<span class="mk">' + a.icon + '</span><b>' + a.name + '</b>' +
+            '<div class="muted tiny mt" style="margin-top:4px">' + a.tip + '</div>' +
+            '<div class="tiny" style="margin-top:4px;color:#8cc4f5">行动 ' + (a.cost.act || 0) + '　精力 ' + (a.cost.energy || 0) + (can ? '' : '　<span class="bad">资源不足</span>') + '</div></button>';
+        }).join('') + '</div>';
+
+      /* 普法实践 */
+      h += '<div class="hr"></div><h4 style="margin:0 0 3px;font-size:16px" class="serif">普法实践玩法</h4>' +
+        '<p class="muted tiny" style="margin:0 0 10px">下乡普法、社区咨询、校园讲座：换<b class="gold">民心声望</b>与<b class="gold">基层经验 buff</b>。</p>' +
+        '<div class="grid g2">' + D.pufa.map(function (p) {
+          const can = s.act >= 1 && s.energy >= p.cost;
+          return '<button type="button" class="opt" data-pufa="' + p.id + '"' + (can ? '' : ' disabled') + '>' +
+            '<span class="mk">📣</span><b>' + p.name + '</b>' +
+            '<div class="muted tiny" style="margin-top:4px">精力 ' + p.cost + '｜奖励：声望+' + p.reward.fame + (p.reward.gold ? '、金币+' + p.reward.gold : '') + (p.reward.buff ? '、解锁「' + p.reward.buff.name + '」' : '') + '</div></button>';
+        }).join('') + '</div>';
+      h += '</div>';
+    }
+
+    /* 执业期工作台 */
+    if (s.stage === 'career') h += careerDesk();
+
+    /* 结束学期 */
+    h += '<div class="btnrow mt"><button type="button" class="btn gold" id="btnEndTerm" data-primary-action="1">▸ 结束本学期（触发随机事件）</button>' +
+      '<button type="button" class="btn ghost" id="btnGoCase">去办案</button>' +
+      '<button type="button" class="btn ghost" id="btnGoExam">考试副本</button></div>';
+
+    h += '<div class="panel mt" style="background:rgba(0,0,0,.25)"><h4 class="serif" style="margin:0 0 6px">当前人格与道德水位</h4>' + personaRow() + '</div>';
+    el.innerHTML = h;
+    bindCampus(el);
+  };
+
+  function personaRow() {
+    const p = G.primaryPersona();
+    return '<div class="grid g4">' + D.personas.map(function (x) {
+      const v = G.s.persona[x.id];
+      return '<div class="persona" style="border-color:' + (p && p.id === x.id ? x.color : 'rgba(255,255,255,.12)') + '">' +
+        '<div class="tiny muted">' + x.name + '</div><div class="pv" style="color:' + x.color + '">' + v + '</div>' +
+        '<div class="tiny muted">' + x.perk + '</div></div>';
+    }).join('') + '</div>' +
+      '<div class="hr"></div><div class="hpline"><span class="tiny muted">徇私值（' + G.s.selfish + '/5）</span>' +
+      '<span class="tiny ' + (G.s.selfish >= 1 ? 'bad' : 'muted') + '">' + moralTag() + '</span></div>' +
+      '<div class="evil-meter mt"><i style="width:' + Math.min(100, G.s.selfish / 5 * 100) + '%"></i></div>' +
+      '<p class="tiny muted" style="margin:8px 0 0">徇私、乱判、适用法律错误、程序违法会累积徇私值：通报批评→征信扣分→停职→吊销执照（坏结局）。</p>' +
+      (p ? '<p class="tiny gold" style="margin:8px 0 0">主导人格「' + p.name + '」生效：' + p.perk + '</p>' : '');
+  }
+  G.personaRow = personaRow;
+
+  /* 徇私值当前后果提示 */
+  function moralTag() {
+    const hit = D.badEndings.slice().sort((a, b) => b.at - a.at).find(x => G.s.selfish >= x.at);
+    return hit ? '已触发：' + hit.name : '暂未越界';
+  }
+  G.moralTag = moralTag;
+
+  function stageCareerTitle() {
+    if (!G.s.career) return '职业未定 · 待分流';
+    const c = D.careers[G.s.career];
+    const node = G.s.jobNode >= 0 ? c.nodes[G.s.jobNode] : null;
+    return c.name + (node ? ' · ' + node.name : ' · 未入编');
+  }
+  G.careerTitle = stageCareerTitle;
+
+  function careerDesk() {
+    if (!G.s.career) {
+      return '<div class="panel mt"><h3 style="margin:0;font-size:18px">等待职业分流</h3>' +
+        '<p class="muted sm">你的学籍已结束，请在「生涯路线」选择公职司法线、律师执业线或企业法务线，之后再此处理日常工作。</p>' +
+        '<button type="button" class="btn gold mt" data-goto="career">前往选择路线</button></div>';
+    }
+    const c = D.careers[G.s.career], node = c.nodes[G.s.jobNode];
+    let h = '<div class="panel mt" style="border-color:' + c.color + '"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">' +
+      '<div class="avatar" style="background:rgba(255,255,255,.08);font-size:24px">' + c.icon + '</div>' +
+      '<div style="flex:1;min-width:180px"><h3 style="margin:0;font-size:18px">' + node.name + ' · 日常工作</h3>' +
+      '<p class="muted tiny" style="margin:2px 0 0">月薪折算 ' + G.s.income + ' 金币｜本岗位解锁内容：' + node.actions.join('、') + '</p></div></div>' +
+      '<div class="grid g3 mt">' + node.actions.map(function (a, i) {
+        return '<button type="button" class="opt" data-work="' + i + '"' + (G.s.act >= 1 ? '' : ' disabled') + '>' +
+          '<span class="mk">💼</span><b>' + a + '</b><div class="tiny muted" style="margin-top:4px">行动 1｜产出绩效与办案经验</div></button>';
+      }).join('') + '</div></div>';
+    return h;
+  }
+  G.careerDesk = careerDesk;
+
+  /* ---------- 行动执行 ---------- */
+  function actCost(c) {
+    if (c.act && G.s.act < c.act) { G.toast('本学期行动点已用尽，请「结束本学期」', 'bad'); return false; }
+    if (c.energy && G.s.energy < c.energy) { G.toast('精力不足，先「散步/早睡」回一口', 'bad'); return false; }
+    if (c.act) G.s.act -= c.act;
+    if (c.energy) G.s.energy -= c.energy;
+    return true;
+  }
+  G.actCost = actCost;
+
+  function rollSubj(exclude) {
+    const ids = D.subjects.map(s => s.id).filter(id => id !== exclude);
+    return ids[Math.floor(Math.random() * ids.length)];
+  }
+
+  function doAction(id) {
+    const a = COURSE_ACTIONS.find(x => x.id === id);
+    if (!a || !actCost(a.cost)) { G.save(); G.renderAll(); return; }
+    const internPenalty = G.s.stage === 'intern' ? 0.7 : 1;
+    let msg = '';
+    if (a.kind === 'subj') {
+      /* 学科类行动由 handleAction 走选科弹窗，此处兜底 */
+      const target = rollSubj();
+      const gainExp = {}; gainExp[target] = Math.round((a.id === 'cls' ? 13 : 11) * internPenalty);
+      G.gain({ exp: gainExp });
+      if (a.id === 'drill') G.gain({ gold: 12 });
+      msg = '你刷了一晚上' + G.subj(target).name + '真题';
+    } else if (a.kind === 'two') {
+      const x = rollSubj(), y = rollSubj(x);
+      const gainExp = {}; gainExp[x] = Math.round(8 * internPenalty); gainExp[y] = Math.round(7 * internPenalty);
+      G.gain({ exp: gainExp });
+      msg = '图书馆自习：' + G.subj(x).name + '、' + G.subj(y).name + ' 双开';
+    } else if (a.kind === 'moot') {
+      G.gain({ exp: { ssf: Math.round(12 * internPenalty), fl: Math.round(7 * internPenalty) }, fame: 2 });
+      msg = '模拟法庭你担任' + (Math.random() < 0.5 ? '审判长' : '对方一辩') + '，被驳回两次但仍拿到优秀辩手';
+      if (Math.random() < 0.35) G.gain({ lili: 2 });
+    } else if (a.kind === 'rest') {
+      G.gain({ energy: 30, san: 10 });
+      msg = '操场走了六圈，睡了个饱觉';
+    } else if (a.kind === 'job') {
+      G.gain({ gold: 45, san: -3 });
+      msg = '奶茶店兼职 8 小时，腿麻了但工资到账';
+    }
+    G.addLog(msg);
+    maybeEvent(0.4);
+    G.save(); G.renderAll();
+  }
+
+  function refund(a) {
+    if (a.cost.act) G.s.act += a.cost.act;
+    if (a.cost.energy) G.s.energy += a.cost.energy;
+    G.renderStats();
+  }
+
+  /* ---------- 法条卡组视图 ---------- */
+  G.renderDeck = function () {
+    const el = document.getElementById('view-deck');
+    const s = G.s;
+    let h = '<div class="vhead"><h2>法条卡牌库</h2><p>所有法律都是你的卡牌池。办案与辩论时从卡组抽牌；<b class="bad">案由不符的卡打出去即「适用法律错误」</b>，会被当场反驳。持有法理点 <b class="gold">' + s.lili + '</b> 可解锁新卡。</p></div>';
+    h += '<div class="filterrow">' + ['all'].concat(D.subjects.map(x => x.id)).map(function (f, i) {
+      const label = f === 'all' ? '全部' : G.subj(f).name;
+      return '<button type="button" class="segbtn' + (i === 0 ? ' on' : '') + '" data-filter="' + f + '">' + label + '</button>';
+    }).join('') + '<span class="muted tiny">卡组 ' + s.deck.length + '/8｜点击下方卡牌可编入或移出卡组</span></div>';
+
+    h += '<div class="cardgrid" id="deckGrid">' + D.cards.map(function (c) {
+      const owned = s.owned.indexOf(c.id) >= 0;
+      const inDeck = s.deck.indexOf(c.id) >= 0;
+      const sub = G.subj(c.subj);
+      const kindName = { atk: '进攻', def: '防御', buff: '增益', ctrl: '控制', ult: '终结' }[c.kind];
+      return '<div class="lawcard" data-card="' + c.id + '" style="border-color:' + (inDeck ? 'rgba(201,162,39,.55)' : 'rgba(255,255,255,.14)') + '">' +
+        (inDeck ? '<span class="decktag">卡组</span>' : '') +
+        '<div class="ctop"><div class="cname">' + c.name + '</div><div class="cost">' + c.cost + '</div></div>' +
+        '<div class="law">' + c.law + '</div>' +
+        '<div class="quote">' + c.text + '</div>' +
+        '<div class="desc">' + c.desc + '</div>' +
+        '<div class="meta"><span class="rarity r' + c.rarity + '">' + c.rarity + '</span>' +
+        '<span class="tag" style="color:' + sub.color + '">' + sub.name + '</span>' +
+        '<span class="kind">' + kindName + '　' + (c.power ? '伤害' + c.power : c.shield ? '护盾' + c.shield : c.mp ? '回蓝' + c.mp : c.immune ? '免疫' : '辅助') + '</span>' +
+        '<span class="kind">适用：' + c.tags.map(tagName).join('/') + '</span></div>' +
+        (owned ? '' : '<div class="lockmask"><span>未解锁 · 需法理点 ' + c.unlock + '</span></div>') +
+        '</div>';
+    }).join('') + '</div>';
+    h += '<p class="tiny muted mt">法条文本为教学示意摘录，个别原理类卡牌标注为「原理」而非具体条文；本 Demo 内容不构成法律意见，实际办案以现行有效法律文本为准。</p>';
+    el.innerHTML = h;
+
+    el.querySelectorAll('[data-filter]').forEach(function (b) {
+      b.onclick = function () {
+        el.querySelectorAll('[data-filter]').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        const f = b.dataset.filter;
+        el.querySelectorAll('.lawcard').forEach(function (card) {
+          const c = G.card(card.dataset.card);
+          card.style.display = (f === 'all' || c.subj === f || c.tags.indexOf(f) >= 0) ? '' : 'none';
+        });
+      };
+    });
+    el.querySelectorAll('.lawcard').forEach(function (cardEl) {
+      cardEl.onclick = function () { deckCardModal(cardEl.dataset.card); };
+    });
+  };
+  function tagName(t) {
+    return { civil: '民事', crime: '刑事', admin: '行政', labor: '劳动', state: '国赔', text: '条文', procedural: '程序', evidence: '证据', debuff: '精神' }[t] || t;
+  }
+  G.tagName = tagName;
+
+  function deckCardModal(id) {
+    const c = G.card(id), owned = G.s.owned.indexOf(id) >= 0, inDeck = G.s.deck.indexOf(id) >= 0;
+    const sub = G.subj(c.subj);
+    G.dlg({
+      title: c.name, sub: c.law + '　' + c.rarity,
+      html: '<p class="facts">' + c.text + '</p>' +
+        '<p class="sm mt">' + c.desc + '</p>' +
+        '<p class="tiny muted">学科：' + sub.name + '（等级 ' + G.levelOf(G.effAttr(c.subj)).name + '）｜消耗法理值 ' + c.cost + '｜适用案由：' + c.tags.map(tagName).join('、') + '</p>' +
+        (owned ? '' : '<div class="notebox warn">解锁需消耗 <b>' + c.unlock + ' 法理点</b>，当前持有 ' + G.s.lili + '。解锁永久保留，并可在办案/辩论中额外赚取法理点。</div>'),
+      actions: [
+        owned
+          ? { label: inDeck ? '移出卡组' : '编入卡组', gold: true, fn: function () { toggleDeck(id, inDeck); } }
+          : {
+            label: '用法理点解锁', gold: true, fn: function () {
+              if (G.s.lili < c.unlock) { G.toast('法理点不足（需 ' + c.unlock + '，现有 ' + G.s.lili + '）', 'bad'); return; }
+              G.s.lili -= c.unlock; G.s.owned.push(id);
+              if (G.s.deck.length < 8) G.s.deck.push(id);
+              G.addLog('解锁法条卡：<b>' + c.name + '</b>');
+              G.toast('已解锁「' + c.name + '」并' + (G.s.deck.indexOf(id) >= 0 ? '编入卡组' : '候补'), 'ok');
+              G.save(); G.renderAll();
+            }
+          },
+        { label: '关闭', ghost: true }
+      ]
+    });
+  }
+  function toggleDeck(id, removing) {
+    if (removing) { G.s.deck = G.s.deck.filter(x => x !== id); G.toast('已移出卡组', 'ok'); }
+    else {
+      if (G.s.deck.length >= 8) { G.toast('卡组已满 8 张，先移出一张', 'bad'); return; }
+      G.s.deck.push(id); G.toast('已编入卡组（' + G.s.deck.length + '/8）', 'ok');
+    }
+    G.save(); G.renderAll();
+  }
+
+  /* ---------- 结束学期 ---------- */
+  function endTerm() {
+    const s = G.s;
+    s.term += 1;
+    // 阶段推进
+    if (s.stage === 'study' && s.term > 3) { s.stage = 'intern'; s.actMax = 5; G.addLog('进入<b>法律实习期</b>：法院/律所轮岗开始，案件与法考副本解锁。'); }
+    else if (s.stage === 'intern' && s.term > 5) { s.stage = 'career'; s.actMax = 5; G.addLog('实习考核结束，进入<b>职业分流期</b>：请在「生涯路线」选择终局方向。'); }
+    s.act = s.actMax;
+    s.energy = Math.min(100, s.energy + 45);
+    s.buffs.forEach(b => b.dur -= 1);
+    const expired = s.buffs.filter(b => b.dur <= 0);
+    s.buffs = s.buffs.filter(b => b.dur > 0);
+    if (expired.length) G.toast('Buff 到期：' + expired.map(b => b.name).join('、'), '');
+    // 挂科限制检查
+    if (s.labels.indexOf('学业警示') >= 0 && s.stage === 'study') {
+      G.addLog('「学业警示」仍在档案里，辅导员要求你交一份学习规划。');
+    }
+    // 期末考强制（每学期初提示，不强制阻断）
+    G.addLog('新的学期开始了。行动点已刷新。');
+    maybeEvent(1);   // 每学期必触发一次随机事件
+    G.save(); G.renderAll();
+  }
+  G.endTerm = endTerm;
+
+  /* ---------- 随机事件 ---------- */
+  function eligibleEvents() {
+    return D.randEvents.filter(function (e) {
+      const c = e.cond || {};
+      if (c.stage && c.stage.indexOf(G.s.stage) < 0) return false;
+      return true;
+    });
+  }
+  function maybeEvent(prob) {
+    const pool = eligibleEvents();
+    if (!pool.length || Math.random() > prob) return;
+    const e = pool[Math.floor(Math.random() * pool.length)];
+    G.showEvent(e);
+  }
+  G.maybeEvent = maybeEvent;
+  G.showEvent = function (e) {
+    G.dlg({
+      title: '⚡ 随机事件 · ' + e.name, sub: '人生随机系统 · 第' + G.s.term + '学期',
+      html: '<p class="facts">' + e.text + '</p><div class="mt" id="evtOpts">' +
+        e.options.map(function (o, i) {
+          return '<button type="button" class="opt" data-opt="' + i + '"><span class="mk">' + (i ? '◦' : '◦') + '</span>' + o.text + '</button>';
+        }).join('') + '</div>',
+      actions: []
+    });
+    document.querySelectorAll('#evtOpts [data-opt]').forEach(function (b) {
+      b.onclick = function () {
+        const o = e.options[+b.dataset.opt];
+        applyOption(o);
+        G.closeDlg();
+        if (o.note) G.toast(o.note, o.selfish ? 'bad' : 'ok');
+        G.addLog('<b>' + e.name + '</b>：' + o.text + (o.note ? '　<span class="muted">' + o.note + '</span>' : ''));
+        checkMoral();
+        G.save(); G.renderAll();
+      };
+    });
+  };
+  G.applyOption = applyOption;
+  function applyOption(o) {
+    const gain = {};
+    ['gold', 'fame', 'lili', 'san', 'energy'].forEach(function (k) { if (o[k]) gain[k] = o[k]; });
+    if (o.exp) gain.exp = o.exp;
+    G.gain(gain);
+    if (o.selfish) { G.s.selfish += o.selfish; G.addLog('徇私值 +' + o.selfish); }
+    if (o.persona) Object.keys(o.persona).forEach(function (k) { G.s.persona[k] += o.persona[k]; });
+    if (o.buff) { G.s.buffs.push(Object.assign({}, o.buff)); G.toast('获得 Buff：' + o.buff.name, 'ok'); }
+    if (o.debuff) { G.s.buffs.push(Object.assign({}, o.debuff)); }
+    if (o.label && G.s.labels.indexOf(o.label) < 0) G.s.labels.push(o.label);
+  }
+  G.checkMoral = checkMoral;
+  function checkMoral() {
+    const hit = D.badEndings.slice().sort((a, b) => b.at - a.at).find(x => G.s.selfish >= x.at);
+    if (hit && !G.s.moralFlags[hit.id]) {
+      G.s.moralFlags[hit.id] = true;
+      G.addLog('职业事故：<b>' + hit.name + '</b>　' + hit.text);
+      if (hit.id === 'b_disbar') {
+        G.dlg({
+          title: '🚫 坏结局 · ' + hit.name, sub: '第' + G.s.term + '学期',
+          html: '<p class="facts">' + hit.text + '</p><p class="sm mt">徇私值达到 ' + G.s.selfish + '。你的职业生涯在这一行红头文件里画了句号。</p>' +
+            '<div class="notebox bad">坏结局也是一种结局。下次试试把「说情」写进证据目录。</div>',
+          actions: [{ label: '重开一局', gold: true, fn: function () { G.reset(); } }, { label: '继续看档案', ghost: true }]
+        });
+      } else {
+        G.toast('⚠ 职业事故：' + hit.name, 'bad');
+        G.gain({ fame: -8 });
+      }
+    }
+  }
+
+  /* ---------- 通用绑定 ---------- */
+  function bindCampus(el) {
+    el.querySelectorAll('[data-act]').forEach(function (b) {
+      b.onclick = function () { handleAction(b.dataset.act); };
+    });
+    el.querySelectorAll('[data-pufa]').forEach(function (b) {
+      b.onclick = function () { doPufa(b.dataset.pufa); };
+    });
+    el.querySelectorAll('[data-work]').forEach(function (b) {
+      b.onclick = function () { doWork(+b.dataset.work); };
+    });
+    el.querySelectorAll('[data-goto]').forEach(function (b) {
+      b.onclick = function () { G.go(b.dataset.goto); };
+    });
+    const et = el.querySelector('#btnEndTerm'); if (et) et.onclick = endTerm;
+    const gc = el.querySelector('#btnGoCase'); if (gc) gc.onclick = function () { G.go('case'); };
+    const ge = el.querySelector('#btnGoExam'); if (ge) ge.onclick = function () { G.go('exam'); };
+  }
+
+  /* 学科选择：用同步流程（内联面板而非异步弹窗） */
+  function handleAction(id) {
+    const a = COURSE_ACTIONS.find(x => x.id === id);
+    if (a.kind === 'subj') {
+      if (!actCost(a.cost)) { G.save(); G.renderAll(); return; }
+      G.dlg({
+        title: '选择主攻学科', sub: a.name + '　·　行动 1 精力 ' + a.cost.energy,
+        html: '<div class="grid g3">' + D.subjects.map(function (s) {
+          const lv = G.levelOf(G.s.attr[s.id]);
+          return '<button type="button" class="opt" data-subj="' + s.id + '"><span class="mk" style="color:' + s.color + '">' + s.short + '</span>' +
+            '<b>' + s.name + '</b><span class="tag" style="margin-left:6px;color:' + s.color + '">' + lv.name + '</span>' +
+            '<div class="tiny muted" style="margin-top:3px">' + s.desc + '</div></button>';
+        }).join('') + '</div>',
+        actions: [{ label: '取消（返还行动）', ghost: true, fn: function () { refund(a); G.save(); G.renderAll(); } }],
+        after: function (dlg) {
+          dlg.querySelectorAll('[data-subj]').forEach(function (b) {
+            b.onclick = function () {
+              const target = b.dataset.subj;
+              const internPenalty = G.s.stage === 'intern' ? 0.7 : 1;
+              const gainExp = {}; gainExp[target] = Math.round((a.id === 'cls' ? 13 : 11) * internPenalty * (1 + Math.random() * 0.3));
+              G.gain({ exp: gainExp });
+              if (a.id === 'drill') G.gain({ gold: 12 });
+              G.addLog((a.id === 'cls' ? '在《' + G.subj(target).name + '》课上坐到第一排' : '刷了 ' + (20 + Math.round(Math.random() * 30)) + ' 道' + G.subj(target).name + '真题'));
+              G.closeDlg(); maybeEvent(0.4); G.save(); G.renderAll();
+            };
+          });
+        }
+      });
+      return;
+    }
+    doAction(id);
+  }
+
+  function doPufa(id) {
+    const p = D.pufa.find(x => x.id === id);
+    if (!actCost({ act: 1, energy: p.cost })) { G.save(); G.renderAll(); return; }
+    G.gain(p.reward);
+    if (p.reward.buff) G.s.buffs.push(Object.assign({}, p.reward.buff));
+    G.addLog('<b>' + p.name + '</b>：' + p.line);
+    G.dlg({
+      title: p.name, sub: '普法实践 · 民心声望',
+      html: '<p class="facts">' + p.line + '</p><p class="sm mt gold">获得：声望+' + p.reward.fame + (p.reward.gold ? '　金币+' + p.reward.gold : '') +
+        (p.reward.buff ? '　Buff「' + p.reward.buff.name + '」' : '') + '</p>',
+      actions: [{ label: '挺好', gold: true }]
+    });
+    G.save(); G.renderAll();
+  }
+
+  function doWork(i) {
+    const c = D.careers[G.s.career];
+    if (!c || G.s.jobNode < 0) return;
+    const node = c.nodes[G.s.jobNode];
+    const actName = node.actions[i];
+    if (!actCost({ act: 1, energy: 12 })) { G.save(); G.renderAll(); return; }
+    const salary = Math.round(node.salary * 0.25);
+    const expMap = {};
+    const pool = ['fl', 'ssf', 'mf', 'xzf', 'xf', 'xz'];
+    const pick1 = G.s.career === 'gov' ? 'xzf' : G.s.career === 'lawyer' ? 'ssf' : 'mf';
+    expMap[pick1] = 9; expMap[pool[Math.floor(Math.random() * pool.length)]] = 5;
+    G.gain({ gold: salary, exp: expMap, fame: 2 });
+    G.addRankExp(3);
+    G.addLog('【' + node.name + '】处理「' + actName + '」，绩效 ' + salary + ' 金币到账');
+    checkPromotion();
+    maybeEvent(0.5);
+    G.save(); G.renderAll();
+  }
+  G.checkPromotion = checkPromotion;
+  function checkPromotion() {
+    const c = G.s.career ? D.careers[G.s.career] : null;
+    if (!c) return;
+    const nextIdx = G.s.jobNode + 1;
+    if (nextIdx >= c.nodes.length) return;
+    if (window.CAREER && CAREER.canTake) {
+      const chk = CAREER.canTake(c.nodes[nextIdx]);
+      if (chk.ok) {
+        G.dlg({
+          title: '📋 组织考察通知', sub: '晋升机会：' + c.nodes[nextIdx].name,
+          html: '<p class="sm">' + c.name + '下一岗「<b class="gold">' + c.nodes[nextIdx].name + '</b>」条件已达成：' + chk.detail.join('；') + '。</p>' +
+            '<p class="muted tiny mt">接受后将进入新岗位，解锁更大案件池与更高薪资。</p>',
+          actions: [{ label: '接受任命', gold: true, fn: function () { CAREER.takeJob(G.s.career, nextIdx); } }, { label: '再想想', ghost: true }]
+        });
+      }
+    }
+  }
+
+  /* ---------- 全局导航绑定 ---------- */
+  function bindGlobal() {
+    document.getElementById('tabs').addEventListener('click', function (e) {
+      const b = e.target.closest('[data-tab]');
+      if (b && !b.disabled) G.go(b.dataset.tab);
+    });
+    document.getElementById('btnMenu').onclick = function () {
+      const s = G.s;
+      G.dlg({
+        title: '存档与玩法', sub: '进度自动保存在当前浏览器（localStorage）',
+        html: '<p class="tiny muted">存档：第' + s.term + '学期 · ' + stageName[s.stage] + ' · 段位' + G.rank().name + ' · 结案' + s.doneCases.length + '件 · 庭辩' + s.wins + '胜' + s.losses + '负</p>' +
+          '<div class="hr"></div><div class="timeline">' +
+          ['<div class="tl"><span class="tm">前期</span>校园养成：六科属性打底，法条卡入门，诊所接案</div>',
+           '<div class="tl"><span class="tm">中期</span>实习办案：真实改编案例五步流程 + 法庭回合制对战 + 法考副本</div>',
+           '<div class="tl"><span class="tm">后期</span>职业分流：公职/律师/法务三线晋升，大案要案与终极结局</div>'].join('') +
+          '</div><div class="hr"></div>' +
+          '<p class="tiny muted">所有案例均为虚构改编，法条文本为教学示意，不构成法律意见。</p>',
+        actions: [
+          { label: '另存为文本档案', ghost: true, fn: function () { exportSave(); } },
+          { label: '重置存档', danger: true, fn: function () { if (confirm('确定清空当前浏览器存档？')) G.reset(); } },
+          { label: '关闭', gold: true }
+        ]
+      });
+    };
+    document.getElementById('mask').addEventListener('click', function (e) {
+      if (e.target === this && !this.querySelector('.facts')) { /* 保留强提示弹窗，需按钮关闭 */ }
+    });
+  }
+
+  function exportSave() {
+    const blob = new Blob([JSON.stringify(G.s, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '正义之路存档_第' + G.s.term + '学期.json';
+    a.click();
+    G.toast('存档已导出为 JSON', 'ok');
+  }
+
+  /* ---------- 渲染总入口 ---------- */
+  G.renderAll = function () {
+    G.renderStats();
+    G.renderTabs();
+    G.renderCampus();
+    G.renderDeck();
+    if (window.CASE_FLOW) CASE_FLOW.render();
+    if (window.COURT) COURT.renderIdle();
+    if (window.EXAM) EXAM.render();
+    if (window.CAREER) CAREER.render();
+    if (window.RECORD) RECORD.render();
+  };
+
+  /* ---------- 启动 ---------- */
+  G.s = G.load();
+  document.addEventListener('DOMContentLoaded', function () {
+    bindGlobal();
+    G.renderAll();
+    G.dlg({
+      title: '⚖️ 正义之路 · 法学院养成模拟', sub: 'Demo v1 · 青春法学院 × 司法仕途 × 法庭辩论对战',
+      html: '<p class="sm">你是法学院大三学生。六门必修=六项属性，法条=技能卡，案件=关卡，法庭辩论=回合制对战。</p>' +
+        '<div class="hr"></div><div class="grid g2">' +
+        [['📚', '校园养成', '上课/自习/刷题/模拟法庭涨属性；期末挂科掉声望并打上「学业警示」'],
+         ['⚔️', '法庭对战', '逻辑值=血量，法理值=蓝条，正确法条=暴击；案由不符=适用法律错误被反击'],
+         ['🗂️', '办案五步', '阅卷取证 → 定性 → 找法条 → 写文书 → 庭辩；判对涨声望金币法理点'],
+         ['🛤️', '三条结局', '公职司法线 / 律师执业线 / 企业法务线，外加坏结局']].map(function (x) {
+          return '<div class="perk"><span class="ic">' + x[0] + '</span><div><b>' + x[1] + '</b><div class="tiny muted">' + x[2] + '</div></div></div>';
+        }).join('') + '</div>' +
+        '<div class="notebox warn mt">案例均为虚构改编，法条文本为教学示意，不构成法律意见。进度保存在当前浏览器。</div>',
+      actions: [{ label: '开始我的一学期', gold: true }, { label: '先看架构说明', ghost: true, fn: function () { G.showGuide(); } }]
+    });
+  });
+  G.showGuide = function () {
+    G.dlg({
+      title: '游戏框架（Demo 实现说明）', sub: '五大系统 + 四项独创玩法',
+      html: '<div class="timeline">' +
+        [['五大系统', '① 学业养成（六科属性/期末考） ② 案件办案（五步流程） ③ 法庭辩论对战（法理值/逻辑值/暴击反击） ④ 职业三分支结局 ⑤ 人设·声望·道德'],
+         ['独创玩法', '法条卡牌库与卡组构筑、真实考试副本（期末/法考/公考）、随机事件系统、普法实践玩法'],
+         ['Demo 补充（原框架未细化，本版补齐）', '数值化属性与伤害公式、法理点经济（解锁卡牌的唯一货币）、徇私值阶梯惩罚、人格天赋的实际生效规则、学期行动点节拍、案件解锁门槛与失败惩罚、坏结局'],
+         ['扩展建议（正式版可做）', '法考主观题阅卷打分、二审/再审关卡、真实裁判文书库接入、多人对抗辩论（对方由真人扮演）、生涯多周目继承、职业事故支线调查程序']].map(function (x) {
+          return '<div class="tl"><span class="tm">' + x[0] + '</span><br>' + x[1] + '</div>';
+        }).join('') + '</div>',
+      actions: [{ label: '明白了', gold: true }]
+    });
+  };
+})();
+
+</script>
+<script>
+/* SECTION: caseflow 案件办案系统：案件列表 + 五步流程 */
+(function () {
+  'use strict';
+  const D = window.LAW_DATA;
+  const G = window.GAME;
+  const F = (window.CASE_FLOW = {});
+
+  const STAGE_ORDER = { study: 0, intern: 1, career: 2 };
+  const KIND_ICON = { civil: '⚖️', admin: '🏛️', crime: '🔒', labor: '👷', state: '📜' };
+  const KIND_COLOR = { civil: '#4aa3a2', admin: '#3f7fbf', crime: '#c0564f', labor: '#6f9b3f', state: '#c9a227' };
+
+  F.available = function (c) {
+    return STAGE_ORDER[G.s.stage] >= STAGE_ORDER[c.stage];
+  };
+  F.done = function (id) { return G.s.doneCases.indexOf(id) >= 0; };
+
+  F.render = function () {
+    const el = document.getElementById('view-case');
+    if (!el) return;
+    const s = G.s;
+    let h = '<div class="vhead"><h2>案件办案系统</h2><p>' +
+      '每一案都是真实改编的司法场景。<b class="gold">阅卷取证 → 定性 → 找法条 → 写文书 → 法庭辩论</b>。' +
+      '判案正确涨声望、金币、法理点；判断错误触发职业事故 debuff。</p></div>';
+
+    h += '<div class="filterrow">' +
+      ['all', 'open', 'done', 'lock'].map(function (f, i) {
+        const label = { all: '全部案件', open: '可办', done: '已结案', lock: '未解锁' }[f];
+        return '<button type="button" class="segbtn' + (i === 0 ? ' on' : '') + '" data-cf="' + f + '">' + label + '</button>';
+      }).join('') +
+      '<span class="muted tiny">已结案 ' + s.doneCases.length + '/' + D.cases.length + '｜法理点 ' + s.lili + '</span></div>';
+
+    h += '<div class="grid g2" id="caseList">' + D.cases.map(function (c) {
+      const avail = F.available(c), done = F.done(c.id);
+      const sc = s.caseScore[c.id];
+      return '<div class="caselisted" data-case="' + c.id + '">' +
+        '<div class="st" style="background:' + KIND_COLOR[c.kind] + '">' + KIND_ICON[c.kind] + '</div>' +
+        '<div class="info"><h4>' + c.name + '</h4>' +
+        '<div class="sub">' + c.kindName + '　<span class="stars">' + '★'.repeat(c.difficulty) + '</span>' +
+        (done ? '　<span class="done">✔ 已结案' + (sc ? '（表现 ' + sc.grade + '）' : '') + '</span>' : '') + '</div>' +
+        '<div class="tiny muted" style="margin-top:5px">' + c.intro.slice(0, 54) + '…</div></div>' +
+        (done ? '<button type="button" class="btn ghost sm" data-re="1">复盘 / 重办</button>' :
+          avail ? '<button type="button" class="btn gold sm" data-open="' + c.id + '" data-primary-action="1">受理 ▸</button>' :
+            '<span class="pill" style="border-color:rgba(255,255,255,.2);color:#8d9bb2">' + stageNeed(c.stage) + '解锁</span>') +
+        '</div>';
+    }).join('') + '</div>';
+
+    h += '<div class="panel mt"><h4 class="serif" style="margin:0 0 6px">办案提示</h4>' +
+      '<p class="tiny muted" style="margin:0">选错证据会被对方当庭质疑并扣理智；第三步「适用法条」的选择，会直接决定第五步法庭里哪些是你的<b class="gold">命中加成卡</b>、哪些是<b class="bad">适用法律错误陷阱卡</b>。' +
+      '庭前道德抉择会累积徇私值，攒到顶就是坏结局。</p></div>';
+
+    el.innerHTML = h;
+
+    el.querySelectorAll('[data-cf]').forEach(function (b) {
+      b.onclick = function () {
+        el.querySelectorAll('[data-cf]').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        const f = b.dataset.cf;
+        el.querySelectorAll('.caselisted').forEach(function (row) {
+          const c = G.caseById(row.dataset.case);
+          const ok = F.available(c), dn = F.done(c.id);
+          let show = true;
+          if (f === 'open') show = ok && !dn;
+          else if (f === 'done') show = dn;
+          else if (f === 'lock') show = !ok;
+          row.style.display = show ? '' : 'none';
+        });
+      };
+    });
+    el.querySelectorAll('[data-open]').forEach(function (b) {
+      b.onclick = function (e) { e.stopPropagation(); F.start(b.dataset.open); };
+    });
+    el.querySelectorAll('[data-re]').forEach(function (b) {
+      b.onclick = function (e) {
+        e.stopPropagation();
+        replay(G.caseById(b.closest('[data-case]').dataset.case));
+      };
+    });
+  };
+
+  function stageNeed(st) { return st === 'intern' ? '实习期' : '执业期'; }
+
+  /* ---------- 六步流程 ---------- */
+  F.start = function (id) {
+    const c = G.caseById(id);
+    if (!c) return;
+    if (G.s.act < 1) { G.toast('本学期行动点已用尽，请「结束本学期」', 'bad'); return; }
+    if (G.s.energy < 15) { G.toast('精力不足 15，办案前先回校园休息', 'bad'); return; }
+    F.run = {
+      case: c, step: 0, score: 0, max: 0, picks: {},
+      evidenceWrong: 0, lawWrong: 0, replayDiscount: F.done(id) ? 0.5 : 1
+    };
+    G.actCost({ act: 1, energy: 15 });
+    G.save(); G.renderStats();
+    renderStep();
+  };
+
+  const STEPS = [
+    { key: 'evidence', name: '① 阅卷取证' },
+    { key: 'qualify', name: '② 定性' },
+    { key: 'lawpick', name: '③ 找法条' },
+    { key: 'doc', name: '④ 写文书' },
+    { key: 'moral', name: '⑤ 庭前抉择' },
+    { key: 'battle', name: '⑥ 法庭辩论' }
+  ];
+  function stepList() {
+    return STEPS.filter(st => st.key !== 'moral' || !!F.run.case.moral);
+  }
+
+  function renderStep() {
+    const run = F.run, c = run.case;
+    const list = stepList();
+    const cur = list[run.step];
+    if (!cur) { goBattle(); return; }
+
+    let body = '';
+    if (cur.key === 'evidence') {
+      const p = run.picks.ev = run.picks.ev || [];
+      body = '<p class="sm">' + c.evidence.prompt + '</p><p class="tiny muted">可多选。关联性、合法性、真实性三性缺一都会被质疑。</p>' +
+        c.evidence.options.map(function (o, i) {
+          return '<button type="button" class="opt' + (p.indexOf(i) >= 0 ? ' on' : '') + '" data-ev="' + i + '">' +
+            '<span class="mk">' + (p.indexOf(i) >= 0 ? '☑' : '☐') + '</span>' + o.text + '</button>';
+        }).join('');
+    } else if (cur.key === 'lawpick') {
+      const p = run.picks.law = run.picks.law || [];
+      body = '<p class="sm">' + c.lawpick.prompt + '</p>' +
+        c.lawpick.options.map(function (cid) {
+          const card = G.card(cid);
+          return '<button type="button" class="opt' + (p.indexOf(cid) >= 0 ? ' on' : '') + '" data-law="' + cid + '">' +
+            '<span class="mk">' + (p.indexOf(cid) >= 0 ? '☑' : '☐') + '</span>' +
+            '<b>' + card.name + '</b> <span class="tag" style="color:' + G.subj(card.subj).color + '">' + G.subj(card.subj).name + '</span>' +
+            '<div class="tiny muted" style="margin-top:3px">' + card.law + '</div></button>';
+        }).join('') +
+        '<p class="tiny muted">已选 ' + p.length + '/2｜' + (c.lawpick.tip || '把别的案由条文搬进本案，庭上即为「适用法律错误」。') + '</p>';
+    } else if (cur.key === 'battle') {
+      const b = c.battle;
+      const perfPct = Math.round(run.score / Math.max(1, run.max) * 100);
+      body = '<div class="grid g2">' +
+        '<div class="perk"><span class="ic">🎯</span><div><b>办案表现 ' + perfPct + '%</b><div class="tiny muted">前四步正确率，直接换算为庭审开局增益</div></div></div>' +
+        '<div class="perk"><span class="ic">👤</span><div><b>' + b.enemy + '</b><div class="tiny muted">逻辑值 ' + b.hp + '｜' + '★'.repeat(c.difficulty) + '</div></div></div>' +
+        '<div class="perk"><span class="ic">🃏</span><div><b>命中法条</b><div class="tiny muted">' + (run.picks.law || []).filter(x => c.lawpick.correct.indexOf(x) >= 0).map(x => G.card(x).name).join('、') + '</div></div></div>' +
+        '<div class="perk"><span class="ic">⚠️</span><div><b>误用条文</b><div class="tiny muted">' + ((run.picks.law || []).filter(x => c.lawpick.correct.indexOf(x) < 0).map(x => G.card(x).name).join('、') || '无') + '</div></div></div>' +
+        '</div>' +
+        '<div class="notebox warn mt">对方开局陈词：「' + b.taunt + '」</div>' +
+        '<p class="tiny muted mt">庭审规则：<b>逻辑值=血量</b>，<b>法理值=蓝条</b>（每回合自然回复 2+实务派加成）；' +
+        '打出<b class="gold">克制对方当前招数</b>的卡即为正确法条暴击；打出<b class="bad">案由不符</b>的卡会被当庭反驳并反伤。</p>';
+    } else {
+      const o = c[cur.key], sel = run.picks[cur.key];
+      body = '<p class="sm">' + (o.prompt || o.text) + '</p>' +
+        (o.prompt ? '' : '<p class="tiny muted">这不是对错，是你的选择。</p>') +
+        o.options.map(function (x, i) {
+          return '<button type="button" class="opt' + (sel === i ? ' on' : '') + '" data-single="' + i + '">' +
+            '<span class="mk">' + String.fromCharCode(65 + i) + '</span>' + x.text + '</button>';
+        }).join('');
+    }
+
+    const stepsHtml = '<div class="steps">' + list.map(function (st, i) {
+      return '<div class="step ' + (i < run.step ? 'done' : i === run.step ? 'on' : '') + '">' + st.name + '</div>';
+    }).join('') + '</div>';
+
+    const isLast = run.step === list.length - 2;
+    G.dlg({
+      title: '案卷 · ' + c.name, sub: c.kindName + '　·　' + '★'.repeat(c.difficulty) + (F.done(c.id) ? '　（复盘重办，收益减半）' : ''),
+      html: '<div class="facts">' + c.intro + '</div>' + stepsHtml +
+        '<div class="mt">' + body + '</div>' +
+        '<div class="notebox tiny" id="stepNote" style="display:none"></div>',
+      actions: cur.key === 'battle'
+        ? [{ label: '起立，开庭 ▸', gold: true, fn: function () { goBattle(); } }, { label: '临阵退庭', ghost: true, fn: function () { F.run = null; G.go('case'); } }]
+        : [{ label: isLast ? '准备完毕，开庭 ▸' : '确认并提交 ▸', gold: true, keep: true, fn: function () { return commit(cur); } },
+        { label: '退出办案', ghost: true, fn: function () { F.run = null; G.save(); G.renderAll(); } }],
+      after: bindStep(cur)
+    });
+  }
+
+  function bindStep(cur) {
+    return function (dlg) {
+      if (cur.key === 'evidence') {
+        dlg.querySelectorAll('[data-ev]').forEach(function (b) {
+          b.onclick = function () {
+            const i = +b.dataset.ev, p = F.run.picks.ev;
+            if (p.indexOf(i) >= 0) p.splice(p.indexOf(i), 1); else p.push(i);
+            b.classList.toggle('on', p.indexOf(i) >= 0);
+            b.querySelector('.mk').textContent = p.indexOf(i) >= 0 ? '☑' : '☐';
+          };
+        });
+      } else if (cur.key === 'lawpick') {
+        dlg.querySelectorAll('[data-law]').forEach(function (b) {
+          b.onclick = function () {
+            const id = b.dataset.law, p = F.run.picks.law;
+            if (p.indexOf(id) >= 0) p.splice(p.indexOf(id), 1);
+            else { if (p.length >= 2) { G.toast('最多选 2 张法条', 'bad'); return; } p.push(id); }
+            b.classList.toggle('on', p.indexOf(id) >= 0);
+            b.querySelector('.mk').textContent = p.indexOf(id) >= 0 ? '☑' : '☐';
+          };
+        });
+      } else if (cur.key !== 'battle') {
+        dlg.querySelectorAll('[data-single]').forEach(function (b) {
+          b.onclick = function () {
+            dlg.querySelectorAll('[data-single]').forEach(x => x.classList.remove('on'));
+            b.classList.add('on');
+            F.run.picks[cur.key] = +b.dataset.single;
+          };
+        });
+      }
+    };
+  }
+
+  function commit(cur) {
+    const run = F.run, c = run.case, note = document.getElementById('stepNote');
+    run.max += 1;
+    let ok = false, txt = '';
+
+    if (cur.key === 'evidence') {
+      const p = run.picks.ev || [];
+      if (!p.length) { G.toast('至少提交一份证据', 'bad'); return false; }
+      const correctN = c.evidence.options.filter(o => o.correct).length;
+      const good = p.filter(i => c.evidence.options[i].correct).length;
+      const bad = p.length - good;
+      ok = bad === 0 && good === correctN;
+      run.evidenceWrong += bad;
+      if (bad) { G.gain({ san: -6 * bad }); txt += '❌ 提交了 ' + bad + ' 份无关证据，被对方当庭质疑三性（理智 −' + 6 * bad + '）<br>'; }
+      else txt += '✅ 证据链干净：关键证据 ' + good + '/' + correctN + '<br>';
+      txt += '<span class="tiny muted">' + p.map(i => c.evidence.options[i].note).join('<br>') + '</span>';
+    } else if (cur.key === 'qualify' || cur.key === 'doc') {
+      const sel = run.picks[cur.key];
+      if (sel === undefined) { G.toast('先做一个判断', 'bad'); return false; }
+      const o = c[cur.key].options[sel];
+      ok = !!o.correct;
+      txt = (ok ? '✅ ' : '❌ ') + o.text + (o.note ? '<br><span class="tiny muted">' + o.note + '</span>' : '');
+      if (!ok) { G.gain({ san: -5 }); }
+    } else if (cur.key === 'lawpick') {
+      const p = run.picks.law || [];
+      if (p.length !== 2) { G.toast('请选满 2 张法条', 'bad'); return false; }
+      const right = p.filter(x => c.lawpick.correct.indexOf(x) >= 0);
+      const wrong = p.filter(x => c.lawpick.correct.indexOf(x) < 0);
+      ok = right.length === c.lawpick.correct.length && !wrong.length;
+      run.lawWrong += wrong.length;
+      txt = '✅ 命中 ' + right.length + '/' + c.lawpick.correct.length +
+        (wrong.length ? '　❌ 误用 ' + wrong.length + ' 张他案条文（庭上会被反驳）' : '');
+      txt += '<br><span class="tiny muted">' + p.map(function (x) {
+        return '<b>' + G.card(x).name + '</b>：' + (c.lawpick.notes[x] || '');
+      }).join('<br>') + '</span>';
+    } else if (cur.key === 'moral') {
+      const sel = run.picks.moral;
+      if (sel === undefined) { G.toast('先做个决定', 'bad'); return false; }
+      const o = c.moral.options[sel];
+      const gain = {};
+      ['gold', 'fame', 'lili', 'san'].forEach(k => { if (o[k]) gain[k] = o[k]; });
+      if (o.exp) gain.exp = o.exp;
+      G.gain(gain);
+      if (o.selfish) { G.s.selfish += o.selfish; G.addLog('徇私值 +' + o.selfish + '（' + c.name + '）'); }
+      if (o.persona) Object.keys(o.persona).forEach(k => { G.s.persona[k] += o.persona[k]; });
+      ok = !o.selfish;
+      txt = (ok ? '✅ ' : '⚠ ') + (o.note || o.text);
+      G.addLog('<b>' + c.name + ' · 庭前抉择</b>：' + o.text);
+      G.checkMoral();
+    }
+
+    if (ok) run.score += 1;
+    if (note) {
+      note.style.display = 'block';
+      note.className = 'notebox tiny ' + (ok ? '' : cur.key === 'moral' ? 'bad' : 'warn');
+      note.innerHTML = txt;
+    }
+    G.save(); G.renderStats();
+    run.step += 1;
+    setTimeout(renderStep, 820);
+    return false;
+  }
+
+  function goBattle() {
+    const run = F.run, c = run.case;
+    G.closeDlg();
+    const perf = Math.max(0.25, run.score / Math.max(1, run.max));
+    const refused = c.moral ? !c.moral.options[run.picks.moral].selfish : false;
+    window.COURT.start(c, {
+      perf: perf, refused: refused,
+      hitLaws: (run.picks.law || []).filter(x => c.lawpick.correct.indexOf(x) >= 0),
+      wrongLaws: (run.picks.law || []).filter(x => c.lawpick.correct.indexOf(x) < 0),
+      evidenceWrong: run.evidenceWrong,
+      onEnd: function (win) { afterBattle(c, win, perf, run); }
+    });
+  }
+
+  function afterBattle(c, win, perf, run) {
+    const s = G.s, disc = run.replayDiscount;
+    F.run = null;
+    if (window.COURT && COURT.clear) COURT.clear();
+    if (win) {
+      const mult = (perf >= 1 ? 1.3 : perf >= 0.75 ? 1 : 0.72) * disc;
+      const rw = c.reward, gain = {
+        gold: Math.round(rw.gold * mult), fame: Math.round(rw.fame * mult),
+        lili: Math.round(rw.lili * (perf >= 0.75 ? 1.2 : 1) * disc), exp: {}
+      };
+      Object.keys(rw.exp).forEach(k => { gain.exp[k] = Math.round(rw.exp[k] * mult); });
+      G.gain(gain);
+      G.addRankExp(Math.round((10 + c.difficulty * 5) * mult));
+      s.wins += 1;
+      /* 胜诉可洗掉「败诉阴影」 */
+      if (s.labels.indexOf('败诉阴影') >= 0) {
+        s.labels = s.labels.filter(x => x !== '败诉阴影');
+        G.addLog('一场胜诉把「败诉阴影」从档案里刮掉了。');
+      }
+      if (s.doneCases.indexOf(c.id) < 0) s.doneCases.push(c.id);
+      const grade = perf >= 1 ? 'S' : perf >= 0.8 ? 'A' : perf >= 0.55 ? 'B' : 'C';
+      s.caseScore[c.id] = { grade: grade, perf: Math.round(perf * 100), win: true, term: s.term };
+      const pp = G.primaryPersona();
+      if (pp && pp.id === 'ren') G.gain({ fame: 4 });
+      G.addLog('结案 <b>' + c.name + '</b>：胜诉（办案表现 ' + grade + '）');
+      G.dlg({
+        title: '🎉 胜诉 · ' + c.name, sub: '办案表现 ' + grade + '（' + Math.round(perf * 100) + '%）',
+        html: '<p class="facts">' + c.battle.winText + '</p>' +
+          '<div class="grid g2 mt">' + [['金币', '+' + gain.gold], ['声望', '+' + gain.fame], ['法理点', '+' + gain.lili],
+          ['学科经验', Object.keys(gain.exp).map(k => G.subj(k).name + ' +' + gain.exp[k]).join('、') || '—']]
+            .map(function (x) { return '<div class="perk"><span class="ic">✦</span><div><b>' + x[0] + '</b><div class="tiny gold">' + x[1] + '</div></div></div>'; }).join('') + '</div>' +
+          (gain.lili >= 5 ? '<div class="notebox mt">攒下的法理点可以在「法条卡组」解锁更强的条文。</div>' : ''),
+        actions: [{ label: '回案件列表', gold: true, fn: function () { G.go('case'); } }, { label: '去卡组配牌', ghost: true, fn: function () { G.go('deck'); } }]
+      });
+    } else {
+      s.losses += 1;
+      G.gain({ fame: -8, san: -12 });
+      if (s.labels.indexOf('败诉阴影') < 0) s.labels.push('败诉阴影');
+      if (run.lawWrong) { G.s.selfish += 1; G.addLog('适用法律错误被记入办案档案，徇私值 +1'); }
+      G.checkMoral();
+      const right = c.qualify.options.find(o => o.correct);
+      G.dlg({
+        title: '⚠ 败诉 · ' + c.name, sub: '声望 −8　理智 −12　获得标签「败诉阴影」',
+        html: '<p class="facts">' + c.battle.loseText + '</p>' +
+          '<div class="notebox bad">「败诉阴影」：下一场辩论逻辑值上限 −8。<br>' +
+          '<b>复盘要点</b>：本案请求权基础是 —— ' + right.text + '<br>' +
+          '<span class="tiny muted">' + (right.note || '') + '</span></div>',
+        actions: [{ label: '不服，再办一次', gold: true, fn: function () { F.start(c.id); } },
+        { label: '回列表', ghost: true, fn: function () { G.go('case'); } }]
+      });
+    }
+    G.save(); G.renderAll();
+  }
+
+  function replay(c) {
+    G.dlg({
+      title: '案卷复盘 · ' + c.name, sub: '已结案（办案表现 ' + (G.s.caseScore[c.id] || {}).grade + '）',
+      html: '<p class="facts">' + c.intro + '</p><div class="hr"></div>' +
+        '<p class="sm"><b class="gold">① 定性 / 请求权基础</b><br>' + c.qualify.options.find(o => o.correct).text + '</p>' +
+        '<p class="sm"><b class="gold">③ 适用法条</b><br>' + c.lawpick.correct.map(function (id) {
+          return G.card(id).name + '（' + G.card(id).law + '）';
+        }).join('<br>') + '</p>' +
+        '<p class="sm"><b class="gold">⑤ 对手</b><br>' + c.battle.enemy + '</p>' +
+        '<p class="tiny muted">重办可再次获得经验，收益减半。</p>',
+      actions: [{ label: '重新办理', gold: true, fn: function () { F.start(c.id); } }, { label: '关闭', ghost: true }]
+    });
+  }
+
+  if (G.s) F.render();
+})();
+
+</script>
+<script>
+/* SECTION: court 法庭辩论对战系统（回合制） */
+(function () {
+  'use strict';
+  const D = window.LAW_DATA;
+  const G = window.GAME;
+  const C = (window.COURT = {});
+
+  let B = null;
+  const MAX_ROUND = 12;
+
+  /* ---------- 数值换算：属性决定辩论伤害 ---------- */
+  function youMaxHp() {
+    let hp = 55 + Math.floor(G.avgAttr() / 3) + G.buffVal('hpUp');
+    if (G.s.labels.indexOf('败诉阴影') >= 0) hp -= 8;
+    return Math.max(40, hp);
+  }
+  function youMaxMp() { return 10 + Math.floor(G.effAttr('xz') / 25) + Math.floor(G.effAttr('ssf') / 40); }
+  function dmgOf(card) {
+    const subMul = 1 + G.effAttr(card.subj) / 100 * 0.62;
+    let d = (card.power || 0) * subMul;
+    if (B.opts.hitLaws && B.opts.hitLaws.indexOf(card.id) >= 0) d *= 1.28;
+    d *= 1 + G.buffVal('dmgUp') / 100;
+    const p = G.primaryPersona();
+    if (p && p.id === 'xue' && card.subj === 'fl') d *= 1.25;
+    if (p && p.id === 'tie' && B.refused) d *= 1.2;
+    if (B.you.debuff) d *= 0.95;
+    return Math.round(d);
+  }
+
+  /* ---------- 克制判定 ---------- */
+  function counterOf(card, intent) {
+    if (!intent) return { hit: false, crit: false, why: '' };
+    if (card.critVs && card.critVs === intent.tag) return { hit: true, crit: true, why: '锁定程序瑕疵，必定暴击' };
+    if (intent.type === 'def' && card.pierce) return { hit: true, crit: false, why: '穿透防御姿态' };
+    if (intent.type === 'debuff' && card.dispel) return { hit: true, crit: false, why: '解除精神压制' };
+    if (intent.tag === 'evidence' && ['c_burden', 'c_claim', 'c_labor_burden', 'c_illegal_ev'].indexOf(card.id) >= 0)
+      return { hit: true, crit: false, why: '举证责任反制' };
+    if (intent.tag === 'procedural' && card.subj === 'ssf') return { hit: true, crit: false, why: '程序规则反制' };
+    if (intent.tag === 'text' && card.subj === 'fl') return { hit: true, crit: false, why: '法律解释穿透条文堆砌' };
+    if (intent.tag === 'text' && card.subj === 'xz') return { hit: true, crit: false, why: '上位法压制' };
+    if (B.case.tag === 'admin' && card.subj === 'xzf') return { hit: true, crit: false, why: '行政法专业对口' };
+    if (B.case.tag === 'crime' && card.subj === 'xf') return { hit: true, crit: false, why: '刑法专业对口' };
+    if (B.case.tag === 'civil' && card.subj === 'mf') return { hit: true, crit: false, why: '民法专业对口' };
+    if (B.case.tag === 'labor' && (card.subj === 'mf' || card.id === 'c_labor_burden' || card.subj === 'ssf'))
+      return { hit: true, crit: false, why: '劳动法语条对口' };
+    if (B.case.tag === 'state' && (card.subj === 'xz' || card.subj === 'ssf')) return { hit: true, crit: false, why: '国家赔偿法条对口' };
+    return { hit: false, crit: false, why: '' };
+  }
+  function kindName(t) { return { civil: '民事', crime: '刑事', admin: '行政', labor: '劳动争议', state: '国家赔偿' }[t] || t; }
+
+  /* ---------- 开战 ---------- */
+  C.start = function (caseObj, opts) {
+    opts = opts || {};
+    B = {
+      case: caseObj, opts: opts, practice: !!opts.practice,
+      round: 1, over: false, refused: !!opts.refused,
+      foe: { name: opts.enemy || caseObj.battle.enemy, hp: opts.hp || caseObj.battle.hp, hpMax: opts.hp || caseObj.battle.hp, shield: 0, intent: null },
+      you: { hp: youMaxHp(), hpMax: youMaxHp(), mp: youMaxMp(), mpMax: youMaxMp(), shield: 0, counter: 0, critUp: 0, critDur: 0, immune: 0, stripFoe: 0, debuff: null },
+      foeWeaken: 0, foeWeakenDur: 0,
+      deck: buildDeck(), hand: [], drawPile: [], log: [],
+      stats: { played: 0, wrong: 0, crit: 0, counter: 0 }
+    };
+    if (opts.hitLaws && opts.hitLaws.length) B.log.push({ who: 'sys', x: '你在办案阶段选对了 <b>' + opts.hitLaws.map(x => G.card(x).name).join('、') + '</b>，这些卡在本庭伤害 +28%。' });
+    if (opts.wrongLaws && opts.wrongLaws.length) B.log.push({ who: 'sys', x: '你误带的 <b class="bad">' + opts.wrongLaws.map(x => G.card(x).name).join('、') + '</b> 属于他案条文，庭上打出即适用法律错误。' });
+    if (opts.evidenceWrong) B.log.push({ who: 'sys', x: '瑕疵证据 ' + opts.evidenceWrong + ' 份被对方点名，开局逻辑值 −' + opts.evidenceWrong * 4 });
+    B.you.hp = Math.max(1, B.you.hp - (opts.evidenceWrong ? opts.evidenceWrong * 4 : 0));
+    refill(); rollIntent();
+    log('sys', '审判长宣布开庭。你的对手是 ' + B.foe.name + '。');
+    if (caseObj.battle.taunt) log('foe', '「' + caseObj.battle.taunt + '」');
+    G.go('court');
+    render();
+  };
+
+  function buildDeck() {
+    let d = G.s.deck.slice();
+    if (d.length < 4) G.s.owned.forEach(id => { if (d.length < 5 && d.indexOf(id) < 0) d.push(id); });
+    if (!d.length) d = D.cards.filter(c => c.starter).map(c => c.id);
+    return d;
+  }
+  function refill() {
+    let guard = 0;
+    while (B.hand.length < 4 && guard++ < 12) {
+      if (!B.drawPile.length) B.drawPile = B.deck.slice().sort(() => Math.random() - .5);
+      const id = B.drawPile.pop();
+      if (!id) break;
+      B.hand.push(id);
+    }
+  }
+  function rollIntent() {
+    const mv = B.case.battle.moves || [];
+    B.foe.intent = mv.length ? mv[Math.floor(Math.random() * mv.length)] : { name: '沉默施压', type: 'atk', tag: 'text', power: 8, text: '对方翻动卷宗，不说话。' };
+  }
+  function log(who, text) { B.log.unshift({ who: who, x: text }); if (B.log.length > 40) B.log.length = 40; }
+  function popDmg(sel, val, cls) {
+    const box = document.querySelector(sel);
+    if (!box || !val) return;
+    const s = document.createElement('span');
+    s.className = 'dmgpop ' + (cls || '');
+    s.textContent = '-' + val;
+    s.style.left = (22 + Math.random() * 46) + '%';
+    s.style.top = '26px';
+    box.appendChild(s);
+    setTimeout(function () { s.remove(); }, 1000);
+  }
+
+  /* ---------- 伤害结算 ---------- */
+  function dealToYou(raw) {
+    if (B.you.immune > 0) { log('sys', '免疫护持生效，本击伤害归零'); return 0; }
+    let d = raw;
+    if (B.you.debuff) d = Math.round(d * 1.2);
+    if (B.you.shield > 0) {
+      const bl = Math.min(B.you.shield, d); B.you.shield -= bl; d -= bl;
+      if (bl) log('you', '护盾吸收 ' + bl + ' 点');
+    }
+    B.you.hp = Math.max(0, B.you.hp - d);
+    if (d > 0) popDmg('#youPanel', d, 'bad');
+    return d;
+  }
+
+  /* ---------- 玩家出牌 ---------- */
+  function playCard(idx) {
+    if (!B || B.over) return;
+    const id = B.hand[idx], card = G.card(id);
+    if (!card) return;
+    if (card.cost > B.you.mp) { G.toast('法理值不足（需 ' + card.cost + '，现有 ' + B.you.mp + '）', 'bad'); return; }
+    B.you.mp -= card.cost; B.hand.splice(idx, 1); B.stats.played++;
+
+    /* 适用法律错误 */
+    if (card.tags.indexOf(B.case.tag) < 0) {
+      B.stats.wrong++;
+      const p = G.primaryPersona();
+      let back = 10 + (B.case.difficulty || 2) * 4;
+      if (p && p.id === 'yan') { back = Math.round(back * 0.5); log('sys', '「严谨派」天赋生效：适用法律错误的反伤减半'); }
+      const dealt = dealToYou(back);
+      G.gain({ fame: -1 });
+      log('foe', '你打出「' + card.name + '」（' + card.law + '）——与本案<b>' + kindName(B.case.tag) + '</b>案由不符，对方当庭反驳：<b class="bad">适用法律错误</b>，你被反击 <b>' + dealt + '</b> 逻辑值，声望 −1');
+      render(); foeTurn(); return;
+    }
+
+    const ctr = counterOf(card, B.foe.intent);
+    if (card.power) {
+      let d = dmgOf(card);
+      const critChance = B.you.critUp + G.buffVal('critUp') - G.buffVal('critDown') + (B.you.debuff ? -12 : 0);
+      let crit = !!ctr.crit || (critChance > 0 && Math.random() * 100 < critChance);
+      if (crit) { d = Math.round(d * 1.9); B.stats.crit++; G.s.lili += 1; }
+      else if (ctr.hit) d = Math.round(d * 1.22);
+      let blocked = 0;
+      if (!card.pierce && B.foe.shield > 0) { blocked = Math.min(B.foe.shield, d); B.foe.shield -= blocked; d -= blocked; }
+      B.foe.hp = Math.max(0, B.foe.hp - d);
+      popDmg('#foePanel', d, crit ? 'gold' : '');
+      log(crit ? 'crit' : 'you', '你打出【' + card.name + '】' + (ctr.why ? '（克制：' + ctr.why + '）' : '') +
+        (crit ? '<b class="gold">正确法条暴击！</b>法理点+1 ' : '') + '对' + B.foe.name + '造成 <b>' + d + '</b> 点逻辑冲击' +
+        (blocked ? '（护盾挡下 ' + blocked + '）' : ''));
+    } else {
+      log('you', '你打出【' + card.name + '】' + (ctr.why ? '（克制：' + ctr.why + '）' : '辅助生效'));
+    }
+    if (card.shield) { B.you.shield += card.shield; log('you', '逻辑护盾 +' + card.shield); }
+    if (card.counter) { B.you.counter += card.counter; log('you', '反击姿态挂载：对方下一击将反噬 ' + card.counter + ' 点'); }
+    if (card.mp) { B.you.mp = Math.min(B.you.mpMax, B.you.mp + card.mp); log('you', '法理值 +' + card.mp); }
+    if (card.san) G.gain({ san: card.san });
+    if (card.strip) { B.you.stripFoe = 1; log('sys', '对方下一招被当庭排除'); }
+    if (card.stun) { B.foeWeaken = Math.max(B.foeWeaken, 25); B.foeWeakenDur = Math.max(B.foeWeakenDur, 2); log('sys', B.foe.name + ' 迟疑两回合，输出下降'); }
+    if (card.weaken) { B.foeWeaken = Math.max(B.foeWeaken, card.weaken); B.foeWeakenDur = Math.max(B.foeWeakenDur, card.dur || 2); log('sys', '【比例原则压制】命中：对方输出 −' + card.weaken + '%'); }
+    if (card.immune) { B.you.immune = Math.max(B.you.immune, card.immune); log('you', '获得 ' + card.immune + ' 回合免疫'); }
+    if (card.critUp) { B.you.critUp = Math.max(B.you.critUp, card.critUp); B.you.critDur = Math.max(B.you.critDur, card.dur || 2); log('you', '暴击率 +' + card.critUp + '%'); }
+    if (card.dispel && B.you.debuff) { log('sys', '负面状态「' + B.you.debuff.name + '」被解除'); B.you.debuff = null; }
+
+    render(); foeTurn();
+  }
+
+  function defend() {
+    if (!B || B.over) return;
+    B.you.shield += 10;
+    B.you.mp = Math.min(B.you.mpMax, B.you.mp + 4);
+    B.stats.played++;
+    log('you', '你申请<b>短暂休庭</b>：整理证据目录，护盾 +10，法理值 +4');
+    render(); foeTurn();
+  }
+
+  function swapHand() {
+    if (!B || B.over) return;
+    B.drawPile = B.hand.concat(B.drawPile);
+    B.hand = [];
+    B.you.mp = Math.min(B.you.mpMax, B.you.mp + 1);
+    B.stats.played++;
+    log('you', '你申请<b>整理卷宗</b>：换掉全部手牌，重新核对证据目录（法理值 +1）');
+    refill();
+    render(); foeTurn();
+  }
+
+  /* ---------- 敌方回合 ---------- */
+  function foeTurn() {
+    if (!B || B.over) return;
+    const mv = B.foe.intent;
+    if (B.you.stripFoe > 0) {
+      B.you.stripFoe = 0;
+      log('sys', B.foe.name + ' 的【' + mv.name + '】被程序性排除，本招作废');
+    } else if (mv.type === 'def') {
+      B.foe.shield += mv.shield;
+      log('foe', B.foe.name + ' 架起【' + mv.name + '】护盾 +' + mv.shield + '　<span class="tiny muted">' + mv.text + '</span>');
+    } else if (mv.type === 'debuff') {
+      B.you.debuff = { name: mv.name };
+      log('foe', B.foe.name + ' 使用【' + mv.name + '】　<span class="tiny muted">' + mv.text + '</span> 我方被压制：受伤 +20%，伤害 −5%');
+      const box = document.querySelector('#youPanel');
+      if (box) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); }
+    } else {
+      let d = mv.power;
+      if (B.foeWeakenDur > 0) d = Math.round(d * (1 - B.foeWeaken / 100));
+      const lv = G.levelOf(G.effAttr('ssf'));
+      d = Math.max(4, Math.round(d * (1 + lv.idx * 0.06)));
+      const dealt = dealToYou(d);
+      log('foe', B.foe.name + ' 甩出【' + mv.name + '】造成 <b>' + dealt + '</b> 点逻辑冲击　<span class="tiny muted">' + mv.text + '</span>');
+      if (B.you.counter > 0 && dealt > 0) {
+        const c = B.you.counter; B.you.counter = 0;
+        B.foe.hp = Math.max(0, B.foe.hp - c);
+        B.stats.counter++; popDmg('#foePanel', c, 'gold');
+        log('crit', '反击触发：<b class="gold">举证不能反杀 −' + c + '</b>');
+      }
+    }
+    if (B.you.immune > 0) B.you.immune--;
+    if (B.foeWeakenDur > 0 && --B.foeWeakenDur === 0) B.foeWeaken = 0;
+    if (B.you.critDur > 1) B.you.critDur--; else { B.you.critDur = 0; B.you.critUp = 0; }
+    const p = G.primaryPersona();
+    B.you.mp = Math.min(B.you.mpMax, B.you.mp + 2 + (p && p.id === 'shi' ? 1 : 0));
+    B.round++; rollIntent(); refill();
+    render();
+    if (checkEnd()) return;
+    if (B.round > MAX_ROUND) timeUp();
+  }
+
+  function checkEnd() {
+    if (!B || B.over) return true;
+    if (B.foe.hp <= 0) { endBattle(true); return true; }
+    if (B.you.hp <= 0) { endBattle(false); return true; }
+    return false;
+  }
+  function timeUp() {
+    if (B.you.hp / B.you.hpMax >= B.foe.hp / B.foe.hpMax) { log('sys', '辩论时限到，审判长按庭审表现裁定：我方占优'); endBattle(true); }
+    else { log('sys', '辩论时限到，审判长按庭审表现裁定：对方占优'); endBattle(false); }
+  }
+  function endBattle(win) {
+    B.over = win ? 'win' : 'lose';
+    render();
+    const opts = B.opts;
+    if (B.practice) {
+      if (win) { G.gain({ exp: { ssf: 6, fl: 4 }, lili: 1 }); G.addRankExp(2); }
+      else G.gain({ san: -4 });
+      G.dlg({
+        title: win ? '🏆 训练赛获胜' : '训练赛失利',
+        sub: '模拟法庭 · 练习不扣声望',
+        html: '<p class="sm">出牌 ' + B.stats.played + ' 张｜命中克制 ' + B.stats.counter + ' 次｜正确法条暴击 ' + B.stats.crit + ' 次｜适用法律错误 ' + B.stats.wrong + ' 次。</p>' +
+          (win ? '<div class="notebox mt">法理点与诉讼法经验到账。</div>' : '<div class="notebox warn mt">逻辑值归零，理智 −4。回卡组调整配比再来。</div>'),
+        actions: [{ label: '回法庭大厅', gold: true, fn: function () { B = null; G.save(); G.renderAll(); } }]
+      });
+      G.save();
+      return;
+    }
+    const cb = opts && opts.onEnd;
+    if (cb) cb(win);
+  }
+
+  /* ---------- 视图渲染 ---------- */
+  function bar(cls, val, max, low) {
+    const pct = Math.max(0, Math.min(100, val / Math.max(1, max) * 100));
+    return '<div class="sbar ' + cls + (low ? ' low' : '') + '"><i style="width:' + pct + '%"></i></div>';
+  }
+
+  const SPARRING = [
+    { name: '新手陪练 · 李法援', tag: 'civil', hp: 42, taunt: '第一次上庭吧？别紧张。', moves: [
+      { name: '生活拮据抗辩', type: 'atk', tag: 'text', power: 8, text: '「他也是为了养家糊口。」' },
+      { name: '证据不足', type: 'atk', tag: 'evidence', power: 9, text: '「复印件吧？原件呢？」' } ] },
+    { name: '刑辩对手 · 姜检察官', tag: 'crime', hp: 58, taunt: '结果摆在这里，辩解苍白。', moves: [
+      { name: '结果归罪冲撞', type: 'atk', tag: 'evidence', power: 13, text: '把伤情鉴定拍在桌上。' },
+      { name: '有罪推定雾', type: 'debuff', tag: 'debuff', power: 0, text: '「当晚你为什么还没睡？」' } ] },
+    { name: '行政对手 · 严科长', tag: 'admin', hp: 62, taunt: '罚重不罚错，安全第一条。', moves: [
+      { name: '裁量基准护甲', type: 'def', tag: 'def', shield: 12, text: '举起内部裁量基准。' },
+      { name: '重典治市锤', type: 'atk', tag: 'text', power: 14, text: '搬出专项整治文件。' } ] },
+    { name: '大状模拟 · 郝律师', tag: 'civil', hp: 70, taunt: '程序上，你就输了一半。', moves: [
+      { name: '管辖权异议', type: 'atk', tag: 'procedural', power: 11, text: '「这个庭没有管辖权。」' },
+      { name: '违约金调减请求', type: 'atk', tag: 'text', power: 13, text: '「约定条款显失公平。」' },
+      { name: '证据突袭', type: 'atk', tag: 'evidence', power: 15, text: '当庭提交三份补充证据。' } ] }
+  ];
+
+  C.renderIdle = function () {
+    if (B) { render(); return; }
+    const el = document.getElementById('view-court');
+    if (!el) return;
+    const s = G.s, p = G.primaryPersona();
+    let h = '<div class="vhead"><h2>法庭辩论对战</h2><p>' +
+      '<b class="gold">逻辑值 = 血量</b>，<b class="gold">法理值 = 蓝条</b>，<b class="gold">正确法条 = 暴击</b>，错误适用 = 被反击掉血。' +
+      '打赢法庭涨段位：' + D.ranks.map(r => r.name).join(' → ') + '</p></div>';
+
+    h += '<div class="grid g2">' +
+      '<div class="panel"><h3 style="margin:0 0 6px;font-size:18px">模拟法庭 · 自由练习赛</h3>' +
+      '<p class="tiny muted" style="margin:0 0 12px">用当前卡组打训练赛：不消耗行动点，输了不扣声望。适合测试新配的卡组。</p>' +
+      '<div class="grid g2">' + SPARRING.map(function (sp, i) {
+        return '<button type="button" class="btn" data-spar="' + i + '"' + (i === 0 ? ' data-primary-action="1"' : '') + '>⚔ ' + sp.name + '</button>';
+      }).join('') + '</div>' +
+      '<div class="hr"></div><p class="tiny muted">血量上限 <b class="gold">' + youMaxHp() + '</b>｜法理上限 <b class="gold">' + youMaxMp() + '</b>｜人格天赋：' + (p ? p.name + '（' + p.perk + '）' : '未定型（先办案累积人格）') + '</p></div>' +
+
+      '<div class="panel"><h3 style="margin:0 0 6px;font-size:18px">对战规则速查</h3>' +
+      '<div class="timeline">' +
+      [['回合流程', '对方亮出<b>下一招意图</b> → 你选手牌中克制的法条 → 命中即克制加成/暴击 → 对方出手 → 结算反击、护盾与回蓝。'],
+       ['克制对照', '条文堆砌(text) → 法理解释穿透 / 宪法上位法压制<br>证据攻击(evidence) → 举证责任反制<br>程序拖延(procedural) → 诉讼法规则 / 程序正义暴击<br>防御姿态(def) → 穿透类终结技'],
+       ['适用法律错误', '打出与案由不符的卡：被当庭反驳、反伤 14~22 逻辑值，声望 −1，记入办案档案（累积徇私值）。'],
+       ['属性换算', '学科属性直接换算辩论伤害：每 100 点 ≈ +' + 62 + '% 该科卡牌伤害；宪法与诉讼法等级还决定蓝条与血量上限。'],
+       ['手牌与法理', '手牌 4 张自动补充；法理值每回合自然回复 2 点（实务派 +1），高级卡需要攒蓝。']]
+        .map(function (x) { return '<div class="tl"><span class="tm">' + x[0] + '</span><br>' + x[1] + '</div>'; }).join('') +
+      '</div></div></div>';
+
+    h += '<div class="panel mt"><h4 class="serif" style="margin:0 0 8px">当前卡组（' + s.deck.length + '/8）</h4>' +
+      '<div class="cardgrid">' + (s.deck.length ? s.deck.map(function (id) {
+        const c = G.card(id);
+        return '<div class="lawcard" style="cursor:default"><div class="ctop"><div class="cname">' + c.name + '</div><div class="cost">' + c.cost + '</div></div>' +
+          '<div class="law">' + c.law + '</div><div class="desc">' + c.desc + '</div>' +
+          '<div class="meta"><span class="rarity r' + c.rarity + '">' + c.rarity + '</span><span class="kind">适用：' + c.tags.map(G.tagName).join('/') + '</span></div></div>';
+      }).join('') : '<p class="muted sm">卡组为空，请先去「法条卡组」编入卡牌。</p>') + '</div></div>';
+
+    h += '<div class="hr"></div><div class="btnrow">' +
+      '<button type="button" class="btn gold" data-goto="case">受理案件，进真庭 ▸</button>' +
+      '<button type="button" class="btn ghost" data-goto="deck">调整卡组</button></div>';
+
+    el.innerHTML = h;
+    el.querySelectorAll('[data-spar]').forEach(function (b) {
+      b.onclick = function () {
+        const sp = SPARRING[+b.dataset.spar];
+        if (!G.s.deck.length) { G.toast('卡组为空，先去编牌', 'bad'); return; }
+        C.start({ name: '模拟法庭训练', tag: sp.tag, difficulty: 2, battle: { enemy: sp.name, hp: sp.hp, taunt: sp.taunt, moves: sp.moves } },
+          { practice: true, enemy: sp.name, hp: sp.hp, hitLaws: [], wrongLaws: [], evidenceWrong: 0 });
+      };
+    });
+    el.querySelectorAll('[data-goto]').forEach(function (b) { b.onclick = function () { G.go(b.dataset.goto); }; });
+  };
+
+  /* ---------- 战斗界面 ---------- */
+  function render() {
+    if (!B) { C.renderIdle(); return; }
+    const el = document.getElementById('view-court');
+    if (!el) return;
+    const mv = B.foe.intent, you = B.you, p = G.primaryPersona();
+
+    let h = '<div class="court">' +
+      '<div class="roof"><b>⚖ ' + (B.practice ? '模拟法庭 · 训练赛' : B.case.name) + '</b>' +
+      '<span class="tiny muted">' + kindName(B.case.tag) + '案由　第' + B.round + '/' + MAX_ROUND + '回合　段位 ' + G.rank().name + (p ? '　' + p.name : '') + '</span>' +
+      (B.over ? '<span class="pill" style="border-color:var(--gold);color:var(--gold-lt)">' + (B.over === 'win' ? '✔ 胜诉' : '✘ 败诉') + '</span>' :
+        '<button type="button" class="btn ghost sm" id="btnRetire">申请退庭</button>') + '</div>' +
+
+      '<div class="duel">' +
+      '<div class="fighter" id="youPanel">' +
+      '<div class="who"><div class="avatar" style="background:linear-gradient(180deg,#2b446e,#1c3055)">🧑‍⚖️</div>' +
+      '<div><b>你（' + G.rank().name + '）</b><small>抽牌堆 ' + B.drawPile.length + '｜出牌 ' + B.stats.played + '</small></div></div>' +
+      '<div class="hpline"><span>逻辑值（血量）</span><span>' + you.hp + '/' + you.hpMax + '</span></div>' + bar('hp', you.hp, you.hpMax, you.hp / you.hpMax < 0.35) +
+      '<div class="hpline"><span>法理值（蓝条）</span><span>' + you.mp + '/' + you.mpMax + '</span></div>' + bar('mp', you.mp, you.mpMax) +
+      '<div class="hpline"><span>护盾 / 反击待命</span><span>' + you.shield + ' / ' + you.counter + '</span></div>' +
+      (you.shield ? bar('sh', you.shield, 30) : '') +
+      '<div class="chips-row">' +
+      (you.critUp ? '<span class="statchip pos">暴击 +' + you.critUp + '%</span>' : '') +
+      (you.immune ? '<span class="statchip pos">免疫 ' + you.immune + '回合</span>' : '') +
+      (you.stripFoe ? '<span class="statchip pos">对方下一招将被排除</span>' : '') +
+      (you.debuff ? '<span class="statchip neg">被压制：' + you.debuff.name + '</span>' : '') +
+      (!you.debuff && !you.critUp && !you.immune && !you.stripFoe ? '<span class="statchip">状态正常</span>' : '') +
+      '</div></div>' +
+
+      '<div class="vscol"><div class="vsbalance serif">第 ' + B.round + '<br>回合</div><div style="font-size:24px">⚖</div>' +
+      '<div class="vsbalance">克制 ' + B.stats.counter + '<br>暴击 ' + B.stats.crit + '<br>误用 ' + B.stats.wrong + '</div></div>' +
+
+      '<div class="fighter" id="foePanel">' +
+      '<div class="who"><div class="avatar" style="background:linear-gradient(180deg,#8f3b38,#5c2320)">👔</div>' +
+      '<div><b>' + B.foe.name + '</b><small>护盾 ' + B.foe.shield + (B.foeWeakenDur ? '｜被削弱 −' + B.foeWeaken + '%（' + B.foeWeakenDur + '回合）' : '') + '</small></div></div>' +
+      '<div class="hpline"><span>逻辑值</span><span>' + B.foe.hp + '/' + B.foe.hpMax + '</span></div>' + bar('hp', B.foe.hp, B.foe.hpMax, B.foe.hp / B.foe.hpMax < 0.35) +
+      (B.foe.shield ? bar('sh', B.foe.shield, 30) : '') +
+      '<div class="notebox" style="margin:9px 0 0"><b class="gold">对方下一步意图：</b>【' + (mv ? mv.name : '—') + '】' + (mv ? mv.text : '') +
+      '<div class="tiny muted" style="margin-top:4px">' + (mv ? '类型 ' + ({ atk: '进攻', def: '防御', debuff: '精神压制' }[mv.type] || mv.type) +
+        '　标签 ' + G.tagName(mv.tag) + (mv.power ? '　威力 ' + mv.power : '') + (mv.shield ? '　护盾 +' + mv.shield : '') : '') + '</div></div>' +
+      '</div></div>' +
+
+      '<div class="logbox" id="courtLog">' + B.log.map(function (l) {
+        return '<p class="' + l.who + '">' + (l.who === 'you' ? '🜁 我方 · ' : l.who === 'foe' ? '🜂 对方 · ' : l.who === 'crit' ? '✦ ' : '⟡ · ') + l.x + '</p>';
+      }).join('') + '</div>' +
+
+      '<div class="hand">' + (B.over ? '' : B.hand.map(function (id, i) {
+        const c = G.card(id);
+        const ctr = counterOf(c, mv);
+        const bad = c.tags.indexOf(B.case.tag) < 0;
+        return '<button type="button" class="hcard' + (bad ? ' mismatch' : '') + '" data-play="' + i + '"' + (c.cost <= you.mp ? '' : ' disabled') + '>' +
+          '<div class="hc">' + c.cost + '</div><div class="hn">' + c.name + '</div>' +
+          '<div class="hl">' + c.law + '</div>' +
+          '<div class="hd">' + (ctr.crit ? '★ ' + ctr.why : ctr.hit ? '★ ' + ctr.why : bad ? '⚠ 与本案案由不符' : '通用输出') +
+          (c.power ? '｜伤害 ' + dmgOf(c) : c.shield ? '｜护盾 ' + c.shield : '') + '</div></button>';
+      }).join('')) + '</div>' +
+
+      '<div class="btnrow" style="padding:0 14px 14px">' +
+      (B.over ? '<button type="button" class="btn gold" id="btnLeave">离开法庭</button>' :
+        '<button type="button" class="btn" id="btnDefend" data-primary-action="1">🛡 申请休庭（护盾+10 法理+4）</button>' +
+        '<button type="button" class="btn ghost" id="btnSwap">📁 整理卷宗（全部换手牌）</button>') +
+      '</div></div>';
+
+    el.innerHTML = h;
+    el.querySelectorAll('[data-play]').forEach(function (b) { b.onclick = function () { playCard(+b.dataset.play); }; });
+    const bd = el.querySelector('#btnDefend'); if (bd) bd.onclick = defend;
+    const bw = el.querySelector('#btnSwap'); if (bw) bw.onclick = swapHand;
+    const bl = el.querySelector('#btnLeave'); if (bl) bl.onclick = function () { B = null; C.renderIdle(); };
+    const br = el.querySelector('#btnRetire'); if (br) br.onclick = function () {
+      G.dlg({
+        title: '确认退庭？', sub: '本庭将按撤诉/缺席处理',
+        html: '<p class="sm">现在退庭等于放弃本案：声望 −6、理智 −8，并留下「临阵退庭」标签。</p>',
+        actions: [{ label: '确认退庭', danger: true, fn: function () {
+          G.gain({ fame: -6, san: -8 });
+          if (G.s.labels.indexOf('临阵退庭') < 0) G.s.labels.push('临阵退庭');
+          G.addLog('临阵退庭：<b>' + B.case.name + '</b>');
+          const cb = B.opts && B.opts.onEnd, prac = B.practice;
+          B = null; G.save();
+          if (!prac && cb) cb(false); else { G.renderAll(); }
+        } }, { label: '继续打', gold: true }]
+      });
+    };
+  }
+
+  C.isActive = function () { return !!B && !B.over; };
+  C.clear = function () { B = null; };
+  if (G.s) C.renderIdle();
+})();
+
+</script>
+<script>
+/* SECTION: side 考试副本 · 生涯路线 · 档案日志 */
+(function () {
+  'use strict';
+  const D = window.LAW_DATA;
+  const G = window.GAME;
+
+  /* ==================== 考试副本 ==================== */
+  const EX = (window.EXAM = {});
+
+  EX.available = function (e) {
+    if (e.stage === 'study') return G.s.stage === 'study' && G.s.term >= e.unlockTerm;
+    if (e.stage === 'intern') return G.s.stage !== 'study';
+    return G.s.stage === 'career';
+  };
+  function stageLabel(st) { return st === 'study' ? '在校（第' + (G.s.term) + '学期起）' : st === 'intern' ? '实习期起' : '执业期'; }
+
+  EX.render = function () {
+    const el = document.getElementById('view-exam');
+    if (!el) return;
+    const s = G.s;
+    let h = '<div class="vhead"><h2>真实考试副本</h2><p>期末考、法考模拟、公考行测申论——把真实司法考试做成<b class="gold">副本</b>。通关解锁称号与 buff；挂科掉声望并触发负面人设标签。</p></div>';
+    h += '<div class="grid g3">' + D.exams.map(function (e) {
+      const ok = EX.available(e), taken = s.examScore[e.id];
+      const can = ok && s.act >= 1 && s.energy >= e.cost;
+      return '<div class="panel" style="border-color:' + (ok ? 'rgba(201,162,39,.4)' : 'rgba(255,255,255,.1)') + '">' +
+        '<h3 style="margin:0 0 4px;font-size:18px">' + e.name + '</h3>' +
+        '<p class="tiny muted" style="margin:0 0 8px">' + e.desc + '</p>' +
+        '<div class="meta"><span class="tag">及格线 ' + e.pass + '分</span><span class="tag">精力 ' + e.cost + '</span><span class="tag">' + e.questions.length + ' 题</span></div>' +
+        (taken ? '<p class="sm mt">上次成绩 <b class="' + (taken.pass ? 'ok' : 'bad') + '">' + taken.score + '分（' + (taken.pass ? '通过' : '未通过') + '）</b></p>' : '') +
+        '<p class="tiny mt" style="margin:0">' + (ok ? '<span class="ok">可报考</span>' : '需 ' + stageLabel(e.stage)) + '</p>' +
+        (ok ? '<button type="button" class="btn gold blk mt" data-exam="' + e.id + '"' + (can ? '' : ' disabled') + ' data-primary-action="1">' + (taken ? '再考一次' : '开始考试') + ' ▸</button>' : '') +
+        (ok && !can ? '<p class="tiny bad" style="margin:6px 0 0">行动点或精力不足</p>' : '') +
+        '</div>';
+    }).join('') + '</div>';
+
+    h += '<div class="panel mt"><h4 class="serif" style="margin:0 0 6px">称号与被动一览</h4>' +
+      '<div class="grid g2">' +
+      [['绩点之光', '期末通过｜下场辩论伤害 +10%'],
+       ['法考上岸', '法考通过｜全学科判定永久 +5，解锁律师线'],
+       ['上岸人', '公考通过｜解锁公职司法线岗位'],
+       ['基层经验', '普法实践｜案件经验 +15%（持续 2 学期）'],
+       ['风骨', '拒绝上级干预｜下场辩论伤害 +15%'],
+       ['学业警示 / 败诉阴影', '负面标签｜限制转职、扣血上限']]
+        .map(function (x) { return '<div class="perk"><span class="ic">🏅</span><div><b>' + x[0] + '</b><div class="tiny muted">' + x[1] + '</div></div></div>'; }).join('') +
+      '</div></div>';
+
+    el.innerHTML = h;
+    el.querySelectorAll('[data-exam]').forEach(function (b) { b.onclick = function () { EX.start(b.dataset.exam); }; });
+  };
+
+  EX.start = function (id) {
+    const e = D.exams.find(x => x.id === id);
+    if (!e) return;
+    if (!EX.available(e)) { G.toast('还没到报考阶段', 'bad'); return; }
+    if (!G.actCost({ act: 1, energy: e.cost })) { G.renderAll(); return; }
+    const run = EX.run = { exam: e, i: 0, right: 0, answers: [] };
+    G.save(); G.renderStats();
+    question();
+  };
+
+  function question() {
+    const run = EX.run, e = run.exam, q = e.questions[run.i];
+    const pct = Math.round(run.right / Math.max(1, run.i) * 100) || 0;
+    G.dlg({
+      title: e.name + ' · 第 ' + (run.i + 1) + '/' + e.questions.length + ' 题',
+      sub: '当前正确率 ' + pct + '%　学科：' + G.subj(q.subj).name + '（' + G.levelOf(G.effAttr(q.subj)).name + '）',
+      html: '<div class="facts">' + q.q + '</div><div class="mt">' +
+        q.a.map(function (t, i) {
+          return '<button type="button" class="opt" data-a="' + i + '"><span class="mk">' + 'ABCD'[i] + '</span>' + t + '</button>';
+        }).join('') + '</div>',
+      actions: [{ label: '交卷（跳过本题）', ghost: true, fn: function () { advance(null); } }]
+    });
+    document.querySelectorAll('[data-a]').forEach(function (b) {
+      b.onclick = function () {
+        const i = +b.dataset.a;
+        const correct = i === q.c;
+        if (correct) run.right++;
+        b.classList.add(correct ? 'good' : 'evil');
+        G.dlg({
+          title: correct ? '✓ 答对' : '✗ 答错',
+          sub: e.name + ' · 第 ' + (run.i + 1) + ' 题',
+          html: '<p class="facts">' + q.q + '</p>' +
+            '<p class="sm mt">正确答案：<b class="gold">' + 'ABCD'[q.c] + '. ' + q.a[q.c] + '</b></p>' +
+            '<div class="notebox">📌 ' + q.why + '</div>',
+          actions: [{ label: run.i + 1 >= e.questions.length ? '计算成绩' : '下一题 ▸', gold: true, fn: function () { advance(i); } }]
+        });
+      };
+    });
+  }
+  function advance(ans) {
+    const run = EX.run;
+    run.answers.push(ans);
+    run.i++;
+    if (run.i >= run.exam.questions.length) { score(); return; }
+    question();
+  }
+
+  function score() {
+    const run = EX.run, e = run.exam;
+    const pct = Math.round(run.right / e.questions.length * 100);
+    const pass = pct >= e.pass;
+    G.s.examScore[e.id] = { score: pct, pass: pass, term: G.s.term };
+    const subjExp = {};
+    e.questions.forEach(function (q) { subjExp[q.subj] = (subjExp[q.subj] || 0) + (pass ? 6 : 4); });
+    if (pass) {
+      const rw = e.reward;
+      G.gain({ gold: rw.gold, fame: rw.fame, exp: subjExp, lili: 4 });
+      if (rw.title && G.s.titles.indexOf(rw.title) < 0) G.s.titles.push(rw.title);
+      if (rw.buff) G.s.buffs.push(Object.assign({}, rw.buff));
+      if (rw.attrBuff) G.addLog('全学科判定永久 +5（法考上岸）');
+      if (e.id === 'final' && G.s.labels.indexOf('学业警示') >= 0) {
+        G.s.labels = G.s.labels.filter(x => x !== '学业警示');
+        G.addLog('期末通过，「学业警示」解除，转职限制随之放开。');
+      }
+      G.addRankExp(8);
+      G.dlg({
+        title: '🎓 通过 · ' + e.name, sub: pct + ' 分（及格线 ' + e.pass + '）',
+        html: '<p class="facts">' + (e.reward.note || '成绩单贴上了公告栏，名字排在前面。') + '</p>' +
+          '<div class="grid g2 mt">' + [['成绩', pct + ' 分'], ['称号', e.reward.title || '—'],
+          ['奖励', '金币 +' + e.reward.gold + '　声望 +' + e.reward.fame + '　法理点 +4'], ['学科经验', Object.keys(subjExp).map(k => G.subj(k).name + '+' + subjExp[k]).join('、')]]
+            .map(function (x) { return '<div class="perk"><span class="ic">✦</span><div><b>' + x[0] + '</b><div class="tiny gold">' + x[1] + '</div></div></div>'; }).join('') + '</div>',
+        actions: [{ label: '真好', gold: true, fn: function () { EX.run = null; G.save(); G.renderAll(); } }]
+      });
+      if (e.id === 'gongkao') G.addLog('公考通过：公职司法线岗位向你开放。');
+    } else {
+      const fe = e.failEffect;
+      G.gain({ fame: fe.fame, san: fe.san, exp: subjExp });
+      if (fe.label && G.s.labels.indexOf(fe.label) < 0) G.s.labels.push(fe.label);
+      G.addLog('<b>' + e.name + '</b>未通过（' + pct + ' 分）：' + fe.note);
+      G.dlg({
+        title: '⚠ 未通过 · ' + e.name, sub: pct + ' 分（及格线 ' + e.pass + '）',
+        html: '<div class="notebox bad">' + fe.note + '</div>' +
+          '<p class="sm mt">声望 ' + fe.fame + '　理智 ' + fe.san + '　但错题没白做：' + Object.keys(subjExp).map(k => G.subj(k).name + '+' + subjExp[k]).join('、') +
+          (fe.label ? '　新标签：<b class="bad">' + fe.label + '</b>' : '') + '</p>' +
+          '<p class="tiny muted">挂科会掉声望、限制转职并触发负面人设标签。下次考前多刷对应学科。</p>',
+        actions: [{ label: '回校园补课', gold: true, fn: function () { EX.run = null; G.go('campus'); } },
+        { label: '再来一次', ghost: true, fn: function () { EX.run = null; G.save(); G.renderAll(); EX.start(e.id); } }]
+      });
+    }
+    EX.run = null;
+    G.save(); G.renderAll();
+  }
+
+  /* ==================== 生涯路线 ==================== */
+  const CR = (window.CAREER = {});
+  const needLabel = {
+    fame: f => '声望 ≥ ' + f, rank: r => '段位 ≥ ' + r, title: t => '称号「' + t + '」',
+    exam: x => '通过' + D.exams.find(e => e.id === x).name, studyTerm: n => '在校完成 ' + n + ' 学期',
+    attr: o => Object.keys(o).map(k => G.subj(k).name + ' ≥ ' + o[k] + '（现 ' + G.effAttr(k) + '）').join('、'),
+    moral: m => '徇私值 ≤ ' + m + '（现 ' + G.s.selfish + '）',
+    studyAvg: v => '六科平均 ≥ ' + v + '（现 ' + Math.round(G.avgAttr()) + '）'
+  };
+
+  CR.checkNeed = function (need) {
+    if (!need) return { ok: true, detail: ['无额外条件'] };
+    const miss = [], hit = [];
+    Object.keys(need).forEach(function (k) {
+      let ok = false, cur = null;
+      if (k === 'fame') { ok = G.s.fame >= need.fame; cur = G.s.fame; }
+      else if (k === 'rank') { ok = G.s.rankIdx >= D.ranks.findIndex(r => r.name === need.rank); }
+      else if (k === 'title') { ok = G.s.titles.indexOf(need.title) >= 0; }
+      else if (k === 'exam') { ok = !!(G.s.examScore[need.exam] || {}).pass; }
+      else if (k === 'studyTerm') { ok = G.s.term >= need.studyTerm; }
+      else if (k === 'moral') { ok = G.s.selfish <= need.moral; }
+      else if (k === 'studyAvg') { ok = G.avgAttr() >= need.studyAvg; }
+      else if (k === 'attr') { ok = Object.keys(need.attr).every(x => G.effAttr(x) >= need.attr[x]); }
+      (ok ? hit : miss).push((needLabel[k] || (x => k))(need[k]));
+    });
+    return { ok: !miss.length, detail: hit.concat(miss), miss: miss };
+  };
+  CR.canTake = function (node) { return CR.checkNeed(node.need); };
+
+  CR.render = function () {
+    const el = document.getElementById('view-career');
+    if (!el) return;
+    const s = G.s;
+    let h = '<div class="vhead"><h2>职业三分支结局</h2><p>' +
+      '法学生 → 实习法律人 → <b class="gold">公职司法 / 律师执业 / 企业法务</b> 三条路线，各自的晋升树、解锁玩法与终极结局。走错会通向坏结局。</p></div>';
+
+    if (s.stage !== 'career') {
+      h += '<div class="notebox warn">当前还在' + (s.stage === 'study' ? '在校期' : '实习期') + '。职业分流在<b>执业期</b>开启（在校 3 学期 + 实习 2 学期）。' +
+        '这段时间请把属性、法条卡、法考与公考副本攒起来——三条线的门槛不一样。</div>';
+    }
+
+    h += '<div class="grid g3">' + ['gov', 'lawyer', 'legal'].map(function (k) {
+      const c = D.careers[k];
+      const req = CR.checkNeed(c.need);
+      const chosen = s.career === k;
+      return '<div class="route" style="border-color:' + (chosen ? c.color : 'rgba(255,255,255,.12)') + '">' +
+        '<h4 style="color:' + c.color + '">' + c.icon + ' ' + c.name + '</h4>' +
+        '<p class="tiny muted" style="margin:0 0 8px">' + c.tagline + '｜' + c.desc + '</p>' +
+        '<div class="meta" style="margin-bottom:8px">' + req.detail.map(function (x) {
+          return '<span class="tag" style="color:' + (req.miss && req.miss.indexOf(x) >= 0 ? '#f0938c' : '#84d59a') + '">' +
+            (req.miss && req.miss.indexOf(x) >= 0 ? '✗ ' : '✓ ') + x + '</span>';
+        }).join('') + '</div>' +
+        c.nodes.map(function (n, i) {
+          const nodeReq = CR.canTake(n);
+          const cur = chosen && s.jobNode === i;
+          const done = chosen && s.jobNode >= i;
+          return '<div class="node' + (cur ? ' cur' : done ? '' : ' lockd') + '">' +
+            '<span class="dot">' + (done ? '✓' : i + 1) + '</span>' +
+            '<div><b class="serif">' + n.name + '</b><div class="tiny muted">' + n.actions.slice(0, 3).join('、') + '</div>' +
+            '<div class="tiny" style="color:' + (nodeReq.ok ? '#84d59a' : '#8d9bb2') + '">月薪 ' + n.salary + '　' + (n.need ? nodeReq.detail.join('；') : '基础岗') + '</div></div></div>';
+        }).join('') +
+        '<div class="hr"></div>' +
+        '<p class="tiny" style="margin:0 0 8px"><b class="gold">终极结局：</b>' + c.ending.name + '<br><span class="muted">' + c.ending.text + '</span></p>' +
+        (chosen ? '<span class="pill" style="border-color:' + c.color + ';color:' + c.color + '">当前路线</span>' :
+          (s.stage === 'career' && req.ok ? '<button type="button" class="btn gold blk" data-choose="' + k + '" data-primary-action="1">选择这条路线 ▸</button>' :
+            '<button type="button" class="btn blk" disabled>' + (s.stage === 'career' ? '条件未满足' : '执业期可选') + '</button>')) +
+        '</div>';
+    }).join('') + '</div>';
+
+    h += '<div class="panel mt"><h4 class="serif" style="margin:0 0 6px">人设 · 声望 · 道德系统（灵魂系统）</h4>' + G.personaRow() + '</div>';
+
+    el.innerHTML = h;
+    el.querySelectorAll('[data-choose]').forEach(function (b) {
+      b.onclick = function () { CR.takeJob(b.dataset.choose, 0, true); };
+    });
+  };
+
+  CR.takeJob = function (routeId, idx, first) {
+    const c = D.careers[routeId];
+    if (!c) return;
+    /* 挂科留下的「学业警示」限制转职 */
+    if (first && G.s.labels.indexOf('学业警示') >= 0) {
+      G.toast('档案里挂着「学业警示」，转职被限制：先通过一次期末考试', 'bad');
+      G.addLog('转职申请被卡：学业警示未消除');
+      return;
+    }
+    if (first && G.s.selfish >= 3) {
+      G.toast('停职检查期间不得入职新岗位', 'bad');
+      return;
+    }
+    if (first) {
+      G.s.labels = G.s.labels.filter(x => x !== '学业警示');
+      G.addLog('通过择业审核，「学业警示」标记从档案解除。');
+    }
+    G.s.career = routeId;
+    G.s.jobNode = idx;
+    G.s.income = c.nodes[idx].salary;
+    G.addRankExp(6);
+    G.addLog((first ? '确定职业路线：<b>' : '晋升为 <b>') + c.nodes[idx].name + '</b>（' + c.name + '）');
+    G.save();
+    G.dlg({
+      title: (first ? '🎯 ' : '📈 晋升：') + c.nodes[idx].name,
+      sub: c.name + ' · ' + c.tagline,
+      html: '<p class="facts">' + (first ? c.desc : c.nodes[idx].actions.join('、')) + '</p>' +
+        '<p class="sm mt">月薪折算 <b class="gold">' + c.nodes[idx].salary + ' 金币/学期</b>。解锁案件与日常工作已同步到「校园/案件」视图。</p>' +
+        (first ? '<div class="notebox">职业选择不可随意反悔——换线会重置岗位层级（各线独立积累）。</div>' : ''),
+      actions: [{ label: '开始工作', gold: true, fn: function () { G.go('campus'); } }]
+    });
+    G.renderAll();
+  };
+
+  /* ==================== 档案日志 ==================== */
+  const RC = (window.RECORD = {});
+  RC.render = function () {
+    const el = document.getElementById('view-record');
+    if (!el) return;
+    const s = G.s, p = G.primaryPersona();
+    const total = D.cases.length;
+    let h = '<div class="vhead"><h2>个人档案与办案日志</h2><p>你的每一次判案选择都在改写职业人格。档案跟着你走完整个司法人生。</p></div>';
+
+    h += '<div class="grid g2"><div class="panel">' +
+      '<h3 style="margin:0 0 8px;font-size:18px">基本档案</h3>' +
+      '<div class="grid g4">' +
+      [['学期', '第' + s.term + '学期'], ['阶段', { study: '法学院在校', intern: '法律实习', career: '执业期' }[s.stage]],
+       ['段位', G.rank().name + '（' + s.rankExp + '）'], ['主导人格', p ? p.name : '未定型'],
+       ['庭辩战绩', s.wins + ' 胜 ' + s.losses + ' 负'], ['结案', s.doneCases.length + '/' + total],
+       ['持有法条卡', s.owned.length + '/' + D.cards.length], ['卡组', s.deck.length + '/8'],
+       ['称号', s.titles.join('、') || '暂无'], ['负面标签', s.labels.join('、') || '清白'],
+       ['徇私值', s.selfish + '/5'], ['路线', s.career ? D.careers[s.career].name + ' · ' + (s.jobNode >= 0 ? D.careers[s.career].nodes[s.jobNode].name : '未入职') : '未分流']]
+        .map(function (x) { return '<div class="perk"><span class="ic">·</span><div><div class="tiny muted">' + x[0] + '</div><b class="sm">' + x[1] + '</b></div></div>'; }).join('') +
+      '</div>' +
+      '<div class="hr"></div><h4 class="serif" style="margin:0 0 6px">属性总览</h4>' + G.attrPanel() +
+      '</div>' +
+
+      '<div class="panel"><h3 style="margin:0 0 8px;font-size:18px">案卷归档</h3>' +
+      D.cases.map(function (c) {
+        const sc = s.caseScore[c.id];
+        return '<div class="node' + (sc ? '' : ' lockd') + '"><span class="dot">' + (sc ? sc.grade : '·') + '</span>' +
+          '<div><b class="serif">' + c.name + '</b>' +
+          '<div class="tiny muted">' + c.kindName + '　' + '★'.repeat(c.difficulty) + '</div>' +
+          '<div class="tiny" style="color:' + (sc ? (sc.win ? '#84d59a' : '#f0938c') : '#8d9bb2') + '">' +
+          (sc ? (sc.win ? '胜诉 · 表现 ' + sc.perf + '% · 第' + sc.term + '学期' : '败诉 · 第' + sc.term + '学期') : '未办理') + '</div></div></div>';
+      }).join('') +
+      '<div class="hr"></div><h4 class="serif" style="margin:0 0 6px">考试记录</h4>' +
+      (Object.keys(s.examScore).length ? D.exams.map(function (e) {
+        const r = s.examScore[e.id];
+        return '<div class="hpline"><span>' + e.name + '</span><span class="' + (r.pass ? 'ok' : 'bad') + '">' + r.score + ' 分 · ' + (r.pass ? '通过' : '未通过') + '（第' + r.term + '学期）</span></div>';
+      }).join('') : '<p class="tiny muted">尚无考试记录。期末考从第 2 学期开始。</p>') +
+      '</div></div>';
+
+    h += '<div class="panel mt"><h3 style="margin:0 0 8px;font-size:18px">人生日志</h3><div class="timeline">' +
+      (s.log.length ? s.log.map(function (l) { return '<div class="tl"><span class="tm">' + l.t + '</span><br>' + l.x + '</div>'; }).join('') : '<p class="muted sm">还没有故事。去校园安排一次行动，或受理第一个案件。</p>') +
+      '</div></div>';
+
+    h += '<div class="panel mt"><h4 class="serif" style="margin:0 0 6px">框架补充说明（本 Demo 自行完善的规则）</h4>' +
+      '<div class="grid g2">' +
+      [['行动点节拍', '每学期 5 点行动：日常 1 点、办案 1 点+精力 15、考试 1 点+精力。结束学期回精力并触发随机事件。'],
+       ['经济闭环', '金币来自办案/兼职/薪资；法理点是解锁法条卡的唯一货币，来自胜诉、暴击与普法。'],
+       ['伤害公式', '卡牌伤害 × (1 + 学科属性/100×0.62) × 办案命中加成 × buff × 人格天赋；克制判定命中则 +22%，标注 critVs 者必定暴击。'],
+       ['失败惩罚', '败诉：声望 −8、理智 −12、标签「败诉阴影」（血量上限 −8）；误用法条额外累积徇私值。'],
+       ['段位驱动', '段位经验来自胜诉与日常工作，决定可晋升岗位与可解锁的高阶案件。'],
+       ['坏结局链', '徇私值 1→通报批评，2→征信扣分，3→停职检查，5→吊销执业证书（结束本局）。']]
+        .map(function (x) { return '<div class="perk"><span class="ic">🧩</span><div><b>' + x[0] + '</b><div class="tiny muted">' + x[1] + '</div></div></div>'; }).join('') +
+      '</div>' +
+      '<p class="tiny muted mt">正式版建议接入：真实裁判文书数据、法考主观题分档阅卷、二审/再审关卡、双人对战庭辩、多周目人格继承。</p></div>';
+
+    el.innerHTML = h;
+  };
+
+  if (G.s) { EX.render(); CR.render(); RC.render(); }
+})();
+
+</script>
+</body>
+</html>
